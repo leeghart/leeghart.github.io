@@ -2,246 +2,261 @@
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Billie Eilish</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
+<meta name="apple-mobile-web-app-title" content="Zoë loves Billie">
+<title>Zoë loves Billie</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  html, body { height: 100%; background: #0c0c0c; overflow: hidden; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+:root {
+  --green: #9CDB77;
+  --bg: #0b0b0b;
+  --surface: #111111;
+  --border: #1e1e1e;
+  --text: #e0e0e0;
+  --muted: #888;
+  --dim: #444;
+}
+html { background: var(--bg); height: 100%; overflow: hidden; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
 
-  .app {
-    display: grid;
-    grid-template-columns: 260px 1fr;
-    grid-template-rows: auto 1fr;
-    grid-template-areas: "sidebar header" "sidebar main";
-    height: 100vh;
-    background: #0c0c0c;
-    color: #e0e0e0;
-    font-family: 'DM Sans', sans-serif;
-  }
+/* ZOE HEADER */
+.zoe-header {
+  flex-shrink: 0;
+  text-align: center;
+  padding: 10px 16px 6px;
+}
+.zoe-label {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 1.05rem;
+  color: var(--green);
+  letter-spacing: 0.5px;
+}
 
-  /* SIDEBAR */
-  .sidebar {
-    grid-area: sidebar;
-    background: #0a0a0a;
-    border-right: 1px solid #1a1a1a;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-  .sidebar-img {
-    width: 100%;
-    flex: 1;
-    object-fit: cover;
-    object-position: top center;
-    display: block;
-    filter: saturate(0.65) brightness(0.75);
-    min-height: 0;
-  }
-  .sidebar-info {
-    padding: 1.2rem 1.1rem 1.4rem;
-    flex-shrink: 0;
-    background: #0a0a0a;
-  }
-  .sidebar-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: #fff;
-    line-height: 1.05;
-  }
-  .sidebar-sub {
-    font-size: 10px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: #9CDB77;
-    margin-top: 6px;
-    font-weight: 500;
-  }
-  .sidebar-date {
-    font-size: 11px;
-    color: #3a3a3a;
-    margin-top: 10px;
-    letter-spacing: 0.5px;
-  }
+/* HERO */
+.hero {
+  flex-shrink: 0;
+  position: relative;
+  height: 210px;
+  overflow: hidden;
+}
+.hero img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center 25%;
+  display: block;
+  filter: saturate(0.65) brightness(0.6);
+}
+.hero-overlay {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 1rem 1rem 0.9rem;
+  background: linear-gradient(0deg, rgba(11,11,11,1) 0%, rgba(11,11,11,0) 100%);
+}
+.hero-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
+}
+.hero-sub {
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--green);
+  margin-top: 5px;
+  font-weight: 500;
+}
+.hero-date {
+  font-size: 10px;
+  color: var(--dim);
+  margin-top: 5px;
+}
 
-  /* HEADER / TABS */
-  .header {
-    grid-area: header;
-    background: #0c0c0c;
-    border-bottom: 1px solid #1a1a1a;
-    padding: 0 1.4rem;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    height: 52px;
-    flex-shrink: 0;
-  }
-  .tab {
-    font-size: 11px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: #444;
-    padding: 0.45rem 1rem;
-    cursor: pointer;
-    border-radius: 6px;
-    font-weight: 500;
-    transition: color 0.2s, background 0.2s;
-    user-select: none;
-  }
-  .tab.active { color: #9CDB77; background: #181818; }
+/* TABS */
+.tabs {
+  flex-shrink: 0;
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  padding: 0 8px;
+}
+.tab {
+  flex: 1;
+  text-align: center;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--dim);
+  padding: 11px 4px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+  user-select: none;
+}
+.tab.active { color: var(--green); border-bottom-color: var(--green); }
 
-  /* MAIN CONTENT */
-  .main {
-    grid-area: main;
-    overflow-y: auto;
-    padding: 1.3rem 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    -webkit-overflow-scrolling: touch;
-  }
-  .panel-hidden { display: none !important; }
+/* PANELS */
+.panels { flex: 1; overflow: hidden; position: relative; }
+.panel {
+  position: absolute; inset: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 14px 14px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.panel.active { opacity: 1; pointer-events: auto; }
 
-  .section-label {
-    font-size: 10px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: #9CDB77;
-    margin-bottom: 0.6rem;
-    font-weight: 500;
-  }
+.section-label {
+  font-size: 9px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--green);
+  margin-bottom: 7px;
+  font-weight: 500;
+}
 
-  /* NEWS */
-  .news-card {
-    background: #111;
-    border: 1px solid #1e1e1e;
-    border-radius: 10px;
-    padding: 1rem 1.1rem;
-    display: flex;
-    gap: 10px;
-  }
-  .news-dot {
-    width: 7px; height: 7px;
-    background: #9CDB77;
-    border-radius: 50%;
-    flex-shrink: 0;
-    margin-top: 5px;
-  }
-  .news-body { font-size: 0.875rem; line-height: 1.65; color: #bbb; }
-  .news-body strong { color: #fff; font-weight: 500; }
-  .news-date { font-size: 10px; color: #555; margin-top: 5px; letter-spacing: 1px; }
+/* NEWS */
+.news-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 13px 14px;
+  display: flex;
+  gap: 10px;
+}
+.news-dot {
+  width: 7px; height: 7px;
+  background: var(--green);
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+.news-body { font-size: 0.85rem; line-height: 1.65; color: #bbb; }
+.news-body strong { color: #fff; font-weight: 500; display: block; margin-bottom: 2px; }
+.news-meta { font-size: 10px; color: var(--dim); margin-top: 5px; letter-spacing: 1px; }
 
-  /* QUOTE */
-  .quote-card {
-    background: #111;
-    border-left: 3px solid #9CDB77;
-    border-radius: 0 10px 10px 0;
-    padding: 1rem 1.2rem;
-  }
-  .quote-text {
-    font-family: 'Playfair Display', serif;
-    font-style: italic;
-    font-size: 1.05rem;
-    line-height: 1.75;
-    color: #e0e0e0;
-  }
-  .quote-attr { font-size: 10px; color: #9CDB77; margin-top: 0.6rem; letter-spacing: 1px; }
+/* QUOTE */
+.quote-card {
+  background: var(--surface);
+  border-left: 3px solid var(--green);
+  border-radius: 0 12px 12px 0;
+  padding: 13px 14px;
+}
+.quote-text {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 1rem;
+  line-height: 1.75;
+  color: #e0e0e0;
+}
+.quote-attr { font-size: 10px; color: var(--green); margin-top: 8px; letter-spacing: 1px; }
 
-  /* FACT */
-  .fact-card {
-    background: #111;
-    border: 1px solid #1e1e1e;
-    border-radius: 10px;
-    padding: 0.9rem 1rem;
-  }
-  .fact-tag { font-size: 11px; color: #9CDB77; font-weight: 500; letter-spacing: 1px; margin-bottom: 5px; }
-  .fact-text { font-size: 0.875rem; color: #bbb; line-height: 1.65; }
+/* FACT */
+.fact-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 13px 14px;
+}
+.fact-tag { font-size: 10px; color: var(--green); font-weight: 500; letter-spacing: 1px; margin-bottom: 5px; }
+.fact-text { font-size: 0.85rem; color: #bbb; line-height: 1.65; }
 
-  /* FACT GRID (over-tab) */
-  .fact-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-  .fact-stat { background: #111; border: 1px solid #1e1e1e; border-radius: 10px; padding: 0.8rem 0.9rem; }
-  .fact-val { font-size: 1.3rem; font-weight: 700; color: #9CDB77; }
-  .fact-label { font-size: 10px; color: #555; margin-top: 2px; text-transform: uppercase; letter-spacing: 1px; }
+/* TRACKS */
+.tracks { display: flex; flex-direction: column; gap: 7px; }
+.track {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 13px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.track:active { border-color: var(--green); background: #161616; }
+.track-num { font-size: 11px; color: var(--dim); width: 14px; text-align: center; flex-shrink: 0; }
+.track-info { flex: 1; min-width: 0; }
+.track-title { font-size: 0.875rem; color: #fff; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.track-album { font-size: 10px; color: var(--dim); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.play-btn {
+  width: 30px; height: 30px;
+  background: #1DB954;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
 
-  /* TRACKS */
-  .tracks { display: flex; flex-direction: column; gap: 6px; }
-  .track {
-    background: #111;
-    border: 1px solid #1e1e1e;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 0.65rem 1rem;
-    cursor: pointer;
-    transition: background 0.15s, border-color 0.15s;
-    text-decoration: none;
-  }
-  .track:active { background: #161616; border-color: #9CDB77; }
-  .track-num { font-size: 11px; color: #444; width: 14px; text-align: center; flex-shrink: 0; }
-  .track-info { flex: 1; }
-  .track-title { font-size: 0.875rem; color: #fff; font-weight: 500; }
-  .track-album { font-size: 10px; color: #555; margin-top: 1px; }
-  .play-btn {
-    width: 30px; height: 30px;
-    background: #1DB954;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
+/* FACTS GRID */
+.fact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 13px; }
+.stat-val { font-size: 1.25rem; font-weight: 700; color: var(--green); }
+.stat-label { font-size: 10px; color: var(--dim); margin-top: 2px; text-transform: uppercase; letter-spacing: 1px; line-height: 1.3; }
 
-  /* TWO COL */
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+/* BIO */
+.bio-text { font-size: 0.85rem; color: #bbb; line-height: 1.75; }
 
-  /* ALBUM LIST */
-  .album-item {
-    background: #111;
-    border: 1px solid #1e1e1e;
-    border-radius: 10px;
-    padding: 0.8rem 1rem;
-    margin-bottom: 6px;
-  }
-  .album-title { font-size: 0.85rem; color: #fff; font-weight: 500; }
-  .album-year { font-size: 10px; color: #555; margin-top: 2px; text-transform: uppercase; letter-spacing: 1px; }
+/* ALBUMS */
+.album-item { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 11px 13px; margin-bottom: 7px; }
+.album-title { font-size: 0.875rem; color: #fff; font-weight: 500; }
+.album-year { font-size: 10px; color: var(--dim); margin-top: 2px; letter-spacing: 1px; }
 </style>
 </head>
 <body>
 
-<div class="app">
+<div class="zoe-header">
+  <div class="zoe-label">Zoë loves Billie</div>
+</div>
 
-  <!-- SIDEBAR -->
-  <div class="sidebar">
-    <img class="sidebar-img"
-      src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Billie_Eilish_in_2019_%28cropped%29.jpg/800px-Billie_Eilish_in_2019_%28cropped%29.jpg"
-      alt="Billie Eilish">
-    <div class="sidebar-info">
-      <div class="sidebar-name">Billie<br>Eilish</div>
-      <div class="sidebar-sub">Singer · Songwriter</div>
-      <div class="sidebar-date" id="today-date"></div>
-    </div>
+<div class="hero">
+  <img
+    src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Billie_Eilish_at_Pukkelpop_2019_%283%29.jpg/800px-Billie_Eilish_at_Pukkelpop_2019_%283%29.jpg"
+    alt="Billie Eilish op het podium"
+    onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Billie_Eilish_in_2019_%28cropped%29.jpg/800px-Billie_Eilish_in_2019_%28cropped%29.jpg'">
+  <div class="hero-overlay">
+    <div class="hero-name">Billie Eilish</div>
+    <div class="hero-sub">Singer · Songwriter · Icon</div>
+    <div class="hero-date" id="today-date"></div>
   </div>
+</div>
 
-  <!-- HEADER -->
-  <div class="header">
-    <div class="tab active" onclick="showTab('vandaag', this)">Vandaag</div>
-    <div class="tab" onclick="showTab('muziek', this)">Muziek</div>
-    <div class="tab" onclick="showTab('over', this)">Over Billie</div>
-  </div>
+<div class="tabs">
+  <div class="tab active" onclick="showTab('vandaag',this)">Vandaag</div>
+  <div class="tab" onclick="showTab('muziek',this)">Muziek</div>
+  <div class="tab" onclick="showTab('over',this)">Over Billie</div>
+</div>
 
-  <!-- PANEL: VANDAAG -->
-  <div class="main" id="panel-vandaag">
+<div class="panels">
+
+  <div class="panel active" id="panel-vandaag">
     <div>
       <div class="section-label">Nieuws vandaag</div>
       <div class="news-card">
         <div class="news-dot"></div>
         <div class="news-body">
-          <strong id="news-title"></strong><br>
+          <strong id="news-title"></strong>
           <span id="news-body"></span>
-          <div class="news-date" id="news-date"></div>
+          <div class="news-meta" id="news-date"></div>
         </div>
       </div>
     </div>
@@ -261,96 +276,87 @@
     </div>
   </div>
 
-  <!-- PANEL: MUZIEK -->
-  <div class="main panel-hidden" id="panel-muziek">
+  <div class="panel" id="panel-muziek">
     <div>
-      <div class="section-label">Nummers — klik om te luisteren op Spotify</div>
+      <div class="section-label">Nummers — tik om te luisteren</div>
       <div class="tracks">
         <div class="track" onclick="window.open('https://open.spotify.com/search/bad%20guy%20billie%20eilish','_blank')">
           <span class="track-num">1</span>
           <div class="track-info"><div class="track-title">bad guy</div><div class="track-album">When We All Fall Asleep · 2019</div></div>
-          <div class="play-btn"><svg width="12" height="12" viewBox="0 0 12 12"><polygon points="2,1 11,6 2,11" fill="#000"/></svg></div>
+          <div class="play-btn"><svg width="11" height="11" viewBox="0 0 11 11"><polygon points="2,1 10,5.5 2,10" fill="#000"/></svg></div>
         </div>
         <div class="track" onclick="window.open('https://open.spotify.com/search/ocean%20eyes%20billie%20eilish','_blank')">
           <span class="track-num">2</span>
           <div class="track-info"><div class="track-title">ocean eyes</div><div class="track-album">dont smile at me · 2016</div></div>
-          <div class="play-btn"><svg width="12" height="12" viewBox="0 0 12 12"><polygon points="2,1 11,6 2,11" fill="#000"/></svg></div>
+          <div class="play-btn"><svg width="11" height="11" viewBox="0 0 11 11"><polygon points="2,1 10,5.5 2,10" fill="#000"/></svg></div>
         </div>
         <div class="track" onclick="window.open('https://open.spotify.com/search/happier%20than%20ever%20billie%20eilish','_blank')">
           <span class="track-num">3</span>
           <div class="track-info"><div class="track-title">Happier Than Ever</div><div class="track-album">Happier Than Ever · 2021</div></div>
-          <div class="play-btn"><svg width="12" height="12" viewBox="0 0 12 12"><polygon points="2,1 11,6 2,11" fill="#000"/></svg></div>
+          <div class="play-btn"><svg width="11" height="11" viewBox="0 0 11 11"><polygon points="2,1 10,5.5 2,10" fill="#000"/></svg></div>
         </div>
         <div class="track" onclick="window.open('https://open.spotify.com/search/birds%20of%20a%20feather%20billie%20eilish','_blank')">
           <span class="track-num">4</span>
           <div class="track-info"><div class="track-title">BIRDS OF A FEATHER</div><div class="track-album">HIT ME HARD AND SOFT · 2024</div></div>
-          <div class="play-btn"><svg width="12" height="12" viewBox="0 0 12 12"><polygon points="2,1 11,6 2,11" fill="#000"/></svg></div>
+          <div class="play-btn"><svg width="11" height="11" viewBox="0 0 11 11"><polygon points="2,1 10,5.5 2,10" fill="#000"/></svg></div>
         </div>
         <div class="track" onclick="window.open('https://open.spotify.com/search/lovely%20billie%20eilish%20khalid','_blank')">
           <span class="track-num">5</span>
           <div class="track-info"><div class="track-title">lovely (with Khalid)</div><div class="track-album">13 Reasons Why · 2018</div></div>
-          <div class="play-btn"><svg width="12" height="12" viewBox="0 0 12 12"><polygon points="2,1 11,6 2,11" fill="#000"/></svg></div>
+          <div class="play-btn"><svg width="11" height="11" viewBox="0 0 11 11"><polygon points="2,1 10,5.5 2,10" fill="#000"/></svg></div>
         </div>
         <div class="track" onclick="window.open('https://open.spotify.com/search/bury%20a%20friend%20billie%20eilish','_blank')">
           <span class="track-num">6</span>
           <div class="track-info"><div class="track-title">bury a friend</div><div class="track-album">When We All Fall Asleep · 2019</div></div>
-          <div class="play-btn"><svg width="12" height="12" viewBox="0 0 12 12"><polygon points="2,1 11,6 2,11" fill="#000"/></svg></div>
+          <div class="play-btn"><svg width="11" height="11" viewBox="0 0 11 11"><polygon points="2,1 10,5.5 2,10" fill="#000"/></svg></div>
         </div>
         <div class="track" onclick="window.open('https://open.spotify.com/search/what%20was%20i%20made%20for%20billie%20eilish','_blank')">
           <span class="track-num">7</span>
           <div class="track-info"><div class="track-title">What Was I Made For?</div><div class="track-album">Barbie Soundtrack · 2023</div></div>
-          <div class="play-btn"><svg width="12" height="12" viewBox="0 0 12 12"><polygon points="2,1 11,6 2,11" fill="#000"/></svg></div>
+          <div class="play-btn"><svg width="11" height="11" viewBox="0 0 11 11"><polygon points="2,1 10,5.5 2,10" fill="#000"/></svg></div>
         </div>
         <div class="track" onclick="window.open('https://open.spotify.com/search/idontwannabeyouanymore%20billie%20eilish','_blank')">
           <span class="track-num">8</span>
           <div class="track-info"><div class="track-title">idontwannabeyouanymore</div><div class="track-album">dont smile at me · 2017</div></div>
-          <div class="play-btn"><svg width="12" height="12" viewBox="0 0 12 12"><polygon points="2,1 11,6 2,11" fill="#000"/></svg></div>
+          <div class="play-btn"><svg width="11" height="11" viewBox="0 0 11 11"><polygon points="2,1 10,5.5 2,10" fill="#000"/></svg></div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- PANEL: OVER BILLIE -->
-  <div class="main panel-hidden" id="panel-over">
+  <div class="panel" id="panel-over">
     <div>
       <div class="section-label">Feiten</div>
-      <div class="fact-row">
-        <div class="fact-stat"><div class="fact-val">2001</div><div class="fact-label">Geboortejaar</div></div>
-        <div class="fact-stat"><div class="fact-val">7+</div><div class="fact-label">Grammy Awards</div></div>
-        <div class="fact-stat"><div class="fact-val">Finneas</div><div class="fact-label">Broer &amp; producer</div></div>
-        <div class="fact-stat"><div class="fact-val">17</div><div class="fact-label">Jongste Grammy-winnares ooit</div></div>
+      <div class="fact-grid">
+        <div class="stat-card"><div class="stat-val">2001</div><div class="stat-label">Geboren in LA</div></div>
+        <div class="stat-card"><div class="stat-val">10+</div><div class="stat-label">Grammy Awards</div></div>
+        <div class="stat-card"><div class="stat-val">2×</div><div class="stat-label">Oscar-winnares</div></div>
+        <div class="stat-card"><div class="stat-val">17</div><div class="stat-label">Jongste Grammy-sweep ooit</div></div>
       </div>
     </div>
-    <div class="two-col">
-      <div>
-        <div class="section-label">Albums</div>
-        <div class="album-item"><div class="album-title">dont smile at me</div><div class="album-year">2017 · EP</div></div>
-        <div class="album-item"><div class="album-title">When We All Fall Asleep, Where Do We Go?</div><div class="album-year">2019</div></div>
-        <div class="album-item"><div class="album-title">Happier Than Ever</div><div class="album-year">2021</div></div>
-        <div class="album-item"><div class="album-title">HIT ME HARD AND SOFT</div><div class="album-year">2024</div></div>
+    <div>
+      <div class="section-label">Over haar</div>
+      <div class="fact-card">
+        <div class="bio-text">Billie Eilish Pirate Baird O'Connell werd geboren op 18 december 2001 in Los Angeles. Samen met haar broer Finneas maakte ze haar eerste nummers thuis op een slaapkamer. Op haar 13e ging "Ocean Eyes" viraal op SoundCloud. Ze won als eerste artiest ooit alle vier grote Grammy-awards in één nacht, op haar 18e.</div>
       </div>
-      <div>
-        <div class="section-label">Over haar</div>
-        <div class="news-card" style="border-radius:10px">
-          <div class="news-body" style="font-size:0.82rem;line-height:1.75">
-            Billie Eilish Pirate Baird O'Connell werd op 18 december 2001 geboren in Los Angeles.
-            Ze groeide op in een muzikale familie en maakte samen met haar broer Finneas haar eerste nummers thuis op een slaapkamer.
-            Op haar 13e ging "Ocean Eyes" viraal — en de rest is geschiedenis.
-            Ze won als eerste artiest ooit alle vijf grote Grammy-categorieën.
-          </div>
-        </div>
-      </div>
+    </div>
+    <div>
+      <div class="section-label">Albums</div>
+      <div class="album-item"><div class="album-title">dont smile at me</div><div class="album-year">2017 · EP</div></div>
+      <div class="album-item"><div class="album-title">When We All Fall Asleep, Where Do We Go?</div><div class="album-year">2019</div></div>
+      <div class="album-item"><div class="album-title">Happier Than Ever</div><div class="album-year">2021</div></div>
+      <div class="album-item"><div class="album-title">HIT ME HARD AND SOFT</div><div class="album-year">2024</div></div>
     </div>
   </div>
 
 </div>
 
 <script>
-const quotes = [
+const quotes=[
   "I want to make music I'm proud of, even if it doesn't do well.",
   "The world can be a nasty place — you have to find your own way through it.",
   "People think you have to be a certain way to be an artist. I completely disagree.",
-  "If you don't take the time to think about and analyze your life, you'll never understand it.",
+  "If you don't take the time to think about your life, you'll never understand it.",
   "I have always done whatever I want, and I always will.",
   "Being happy is really hard. It takes a lot of work.",
   "Don't be afraid of being afraid. It just means you care.",
@@ -360,61 +366,50 @@ const quotes = [
   "Art is about exploring the unknown.",
   "I never want to stop making things — even when it scares me."
 ];
-
-const nieuws = [
-  { title: "Concertfilm met James Cameron", body: "Billie maakte een spectaculaire 3D-concertfilm, opgenomen in Manchester en mede-geregisseerd door de regisseur van Avatar en Titanic. Release: 20 maart 2026." },
-  { title: "Grammy-optreden 2024", body: "Billie trad op bij de Grammy Awards en won opnieuw een award — dit keer voor haar bijdrage aan de Barbie-soundtrack." },
-  { title: "Oscar voor 'What Was I Made For?'", body: "Haar nummer voor de Barbie-film won de Oscar voor Beste Originele Nummer in 2024. Ze was pas 22 jaar oud." },
-  { title: "HIT ME HARD AND SOFT uitgebracht", body: "Haar derde studioalbum uit 2024 werd wereldwijd geprezen als haar meest volwassen en eerlijke werk tot nu toe." },
-  { title: "Wereldtournee door Europa", body: "In 2024 deed Billie grote Europese steden aan waaronder Amsterdam, Londen en Parijs voor haar wereldtournee." },
-  { title: "Nieuwe muziek in de maak", body: "Billie kondigde aan dat ze na de tour de studio in gaat voor nieuw materiaal. Fans zijn al volop aan het speculeren." },
-  { title: "Geurlijn uitgebreid", body: "Na het succes van Eilish No. 1 en No. 2 bracht ze een derde parfum uit — volledig veganistisch en diervriendelijk." },
+const nieuws=[
+  {title:"Concertfilm met James Cameron",body:"Billie maakte een 3D-concertfilm, opgenomen in Manchester en mede-geregisseerd door de regisseur van Avatar. Release: 20 maart 2026."},
+  {title:"Grammy voor 'Wildflower'",body:"Op 1 februari 2026 won Billie de Grammy voor Lied van het Jaar voor 'Wildflower', samen met haar broer Finneas."},
+  {title:"Oscar voor 'What Was I Made For?'",body:"Haar nummer voor de Barbie-film won de Oscar voor Beste Originele Nummer in 2024. Ze was pas 22 jaar oud."},
+  {title:"HIT ME HARD AND SOFT",body:"Haar derde album uit 2024 werd wereldwijd geprezen als haar meest volwassen en eerlijke werk tot nu toe."},
+  {title:"Wereldtournee door Europa",body:"In 2024–2025 deed Billie grote Europese steden aan waaronder Amsterdam, Londen en Parijs."},
+  {title:"Nieuwe muziek in de maak",body:"Billie kondigde aan dat ze na de tour de studio in gaat voor een vierde album. Fans wachten gespannen."},
+  {title:"Geurlijn Eilish No. 3",body:"Na het succes van Eilish No. 1 en No. 2 bracht ze een derde parfum uit — volledig veganistisch en diervriendelijk."},
 ];
-
-const weetjes = [
+const weetjes=[
   "Billie leerde zichzelf gitaar spelen op haar 11e — puur uit verveling tijdens een lange zomervakantie.",
   "De hit 'bad guy' werd opgenomen in de slaapkamer van haar broer Finneas in Los Angeles.",
   "Ze is de jongste artiest ooit die alle vier grote Grammy-awards won in één nacht — op haar 18e.",
   "Billie heeft het syndroom van Tourette, iets wat ze openlijk met fans deelt om anderen te steunen.",
   "Ze was maar 13 jaar oud toen 'Ocean Eyes' viraal ging op SoundCloud.",
-  "Ze schreef 'What Was I Made For?' in slechts één dag, toen ze de Barbie-film voor het eerst zag.",
+  "Ze schreef 'What Was I Made For?' in slechts één dag, nadat ze de Barbie-film voor het eerst zag.",
   "Billie is groot dierenliefhebster en heeft meerdere honden. Ze is ook al jaren veganist.",
-  "Haar favoriete band als kind was The Beatles, en ze kent bijna al hun nummers uit haar hoofd.",
-  "De videoclip van 'bad guy' had een budget van minder dan $50.000 — en werd toch wereldberoemd.",
-  "Billie heeft een tatoeage op haar hand die ze meer dan een jaar lang verborgen hield voor haar fans.",
-  "Ze mocht als kind thuis leren (homeschooling) waardoor ze altijd tijd had voor muziek maken.",
+  "Haar favoriete band als kind was The Beatles — ze kent bijna al hun nummers uit haar hoofd.",
+  "De videoclip van 'bad guy' had een budget van minder dan $50.000 en werd toch wereldberoemd.",
+  "Billie heeft een tatoeage op haar hand die ze meer dan een jaar verborgen hield voor haar fans.",
+  "Ze mocht als kind thuisonderwijs volgen, waardoor er altijd tijd was om muziek te maken.",
   "Haar volledige naam is Billie Eilish Pirate Baird O'Connell — haar ouders hielden van piraten."
 ];
 
-function getDayIndex(arr) {
-  const dayNum = Math.floor(Date.now() / 86400000);
-  return dayNum % arr.length;
+function idx(arr){return Math.floor(Date.now()/86400000)%arr.length;}
+
+function init(){
+  const d=new Date();
+  const dag=['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'][d.getDay()];
+  const mnd=['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'][d.getMonth()];
+  document.getElementById('today-date').textContent=dag+' '+d.getDate()+' '+mnd+' '+d.getFullYear();
+  document.getElementById('daily-quote').textContent='\u201C'+quotes[idx(quotes)]+'\u201D';
+  const n=nieuws[idx(nieuws)];
+  document.getElementById('news-title').textContent=n.title;
+  document.getElementById('news-body').textContent=' '+n.body;
+  document.getElementById('news-date').textContent=dag.toUpperCase()+' \u2022 '+d.getDate()+' '+mnd.toUpperCase();
+  document.getElementById('daily-fact').textContent=weetjes[idx(weetjes)];
 }
 
-function init() {
-  const d = new Date();
-  const dagen = ['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
-  const maanden = ['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
-  const dagNaam = dagen[d.getDay()];
-  const datumStr = dagNaam + ' ' + d.getDate() + ' ' + maanden[d.getMonth()] + ' ' + d.getFullYear();
-  document.getElementById('today-date').textContent = datumStr;
-
-  const q = quotes[getDayIndex(quotes)];
-  document.getElementById('daily-quote').textContent = '\u201C' + q + '\u201D';
-
-  const n = nieuws[getDayIndex(nieuws)];
-  document.getElementById('news-title').textContent = n.title;
-  document.getElementById('news-body').textContent = n.body;
-  document.getElementById('news-date').textContent = dagNaam.toUpperCase() + ' \u2022 ' + d.getDate() + ' ' + maanden[d.getMonth()].toUpperCase();
-
-  document.getElementById('daily-fact').textContent = weetjes[getDayIndex(weetjes)];
-}
-
-function showTab(name, el) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+function showTab(name,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
-  document.querySelectorAll('.main').forEach(p => p.classList.add('panel-hidden'));
-  document.getElementById('panel-' + name).classList.remove('panel-hidden');
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
 }
 
 init();
