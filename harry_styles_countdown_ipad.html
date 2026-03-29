@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Harry Styles Countdown</title>
+  <style>
+    :root{
+      --pink:#ec4899;
+      --soft-pink:#fde7f3;
+      --gold:#f59e0b;
+      --cream:#fff8e7;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --card:#ffffffcc;
+      --border:#f5c7df;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at top, #ffffff 0%, #ffe4ec 35%, #fff5d6 100%);
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+    .sparkle{
+      position:fixed;
+      font-size:22px;
+      opacity:.65;
+      animation: pulse 2.4s ease-in-out infinite;
+      pointer-events:none;
+      user-select:none;
+    }
+    @keyframes pulse{
+      0%,100%{transform:scale(1); opacity:.35}
+      50%{transform:scale(1.25); opacity:.9}
+    }
+    .wrap{
+      max-width:1100px;
+      margin:0 auto;
+      padding:24px 16px 40px;
+      position:relative;
+      z-index:1;
+    }
+    .card{
+      background:var(--card);
+      backdrop-filter: blur(10px);
+      border:1px solid var(--border);
+      border-radius:30px;
+      box-shadow:0 8px 24px rgba(0,0,0,.06);
+    }
+    .hero{
+      padding:28px;
+      position:relative;
+      overflow:hidden;
+    }
+    .hero:before,.hero:after{
+      content:"";
+      position:absolute;
+      width:180px;height:180px;border-radius:50%;
+      filter:blur(30px);
+      opacity:.45;
+    }
+    .hero:before{right:-40px;top:-40px;background:#f9a8d4}
+    .hero:after{left:-40px;bottom:-40px;background:#fcd34d}
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 14px;
+      border-radius:999px;
+      border:1px solid #f3bdd8;
+      background:linear-gradient(90deg,#fff1f7,#fff7e7);
+      color:#be185d;
+      font-size:14px;
+      font-weight:600;
+      position:relative;
+      z-index:1;
+    }
+    h1{
+      font-size:clamp(2rem,5vw,4rem);
+      margin:16px 0 10px;
+      line-height:1.05;
+      position:relative;
+      z-index:1;
+    }
+    .subtitle{
+      font-size:1.1rem;
+      color:var(--muted);
+      max-width:760px;
+      position:relative;
+      z-index:1;
+      line-height:1.6;
+    }
+    .maan{
+      display:inline-block;
+      margin-top:18px;
+      padding:12px 18px;
+      border-radius:999px;
+      background:linear-gradient(90deg,#d946ef,#ec4899,#f59e0b);
+      color:white;
+      font-weight:800;
+      letter-spacing:.2px;
+      box-shadow:0 10px 24px rgba(236,72,153,.25);
+      position:relative;
+      z-index:1;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:2fr 1fr;
+      gap:20px;
+      margin-top:20px;
+    }
+    .photo-card{
+      overflow:hidden;
+    }
+    .photo-wrap{
+      position:relative;
+      min-height:300px;
+    }
+    .photo-wrap img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      min-height:300px;
+      max-height:460px;
+    }
+    .photo-overlay{
+      position:absolute;
+      inset:0;
+      background:linear-gradient(to top, rgba(0,0,0,.58), rgba(0,0,0,.08));
+      display:flex;
+      align-items:flex-end;
+      padding:26px;
+      color:white;
+    }
+    .side{
+      padding:24px;
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    }
+    .box{
+      border-radius:24px;
+      padding:18px;
+      border:1px solid var(--border);
+      background:linear-gradient(135deg,#fff7fb,#fff8e7);
+    }
+    .label{
+      font-size:.9rem;
+      color:var(--muted);
+      margin-bottom:8px;
+    }
+    .fact{
+      line-height:1.7;
+    }
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:14px;
+      margin-top:20px;
+    }
+    .stat{
+      padding:18px;
+      text-align:center;
+    }
+    .stat .small{
+      color:#db2777;
+      font-size:.9rem;
+      margin-bottom:8px;
+    }
+    .stat .big{
+      font-size:2rem;
+      font-weight:800;
+    }
+    .playlist{
+      margin-top:20px;
+      padding:24px;
+    }
+    .playlist-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:16px;
+      flex-wrap:wrap;
+    }
+    .button{
+      text-decoration:none;
+      color:var(--text);
+      border:1px solid var(--border);
+      border-radius:999px;
+      padding:10px 16px;
+      background:white;
+      font-weight:600;
+    }
+    .songs{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:16px;
+      margin-top:18px;
+    }
+    .song{
+      border:1px solid var(--border);
+      border-radius:24px;
+      padding:12px;
+      background:linear-gradient(135deg,#ffffff,#fff1f7);
+    }
+    .song-title{
+      font-weight:700;
+      padding:6px 8px 12px;
+    }
+    iframe{
+      width:100%;
+      border:0;
+      border-radius:18px;
+      height:152px;
+    }
+    .footer{
+      text-align:center;
+      color:var(--muted);
+      margin-top:20px;
+      font-size:.95rem;
+    }
+    @media (max-width: 840px){
+      .grid{grid-template-columns:1fr}
+      .songs{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="sparkle" style="top:7%; left:10%;">✨</div>
+  <div class="sparkle" style="top:12%; right:12%; animation-delay:.6s;">⭐</div>
+  <div class="sparkle" style="top:30%; left:17%; animation-delay:1.2s;">✨</div>
+  <div class="sparkle" style="top:44%; right:20%; animation-delay:.9s;">✨</div>
+  <div class="sparkle" style="bottom:18%; left:8%; animation-delay:1.5s;">⭐</div>
+  <div class="sparkle" style="bottom:8%; right:10%; animation-delay:.3s;">✨</div>
+
+  <div class="wrap">
+    <section class="card hero">
+      <div class="badge">✨ Harry Styles concert dashboard</div>
+      <h1 id="headline">Nog ... dagen tot het concert ✨</h1>
+      <div class="subtitle">
+        Aftellen naar woensdag 27 mei 2026. Tijd om alvast in de sfeer te komen met glitter,
+        een dagelijkse Harry-fact en jullie eigen fan message.
+      </div>
+      <div class="maan">✨ Maan loves Harry ✨</div>
+    </section>
+
+    <section class="grid">
+      <div class="card photo-card">
+        <div class="photo-wrap">
+          <img src="https://commons.wikimedia.org/wiki/Special:FilePath/HarryStyles2023.jpg" alt="Harry Styles">
+          <div class="photo-overlay">
+            <div>
+              <div style="font-size:.85rem;letter-spacing:.2em;text-transform:uppercase;opacity:.85;">Concert mood</div>
+              <div style="font-size:2rem;font-weight:800;margin-top:8px;">Harry Styles</div>
+              <div style="margin-top:10px;max-width:560px;line-height:1.6;opacity:.95;">Zet je glitter, flair en favoriete meezingnummers maar alvast klaar.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="card side">
+        <div>
+          <div class="label">Weetje van vandaag</div>
+          <div style="font-size:1.5rem;font-weight:800;">Dagelijkse Harry-fact</div>
+          <div class="fact" id="fact" style="margin-top:10px;"></div>
+        </div>
+
+        <div class="box">
+          <div class="label">Quote</div>
+          <div style="font-size:1.15rem;font-weight:700;line-height:1.7;">“Treat people with kindness.”</div>
+        </div>
+
+        <div class="label">Concertdatum: <strong style="color:#374151;">27 mei 2026</strong></div>
+      </aside>
+    </section>
+
+    <section class="stats">
+      <div class="card stat">
+        <div class="small">Dagen</div>
+        <div class="big" id="days">0</div>
+      </div>
+      <div class="card stat">
+        <div class="small">Uren</div>
+        <div class="big" id="hours">0</div>
+      </div>
+      <div class="card stat">
+        <div class="small">Minuten</div>
+        <div class="big" id="minutes">0</div>
+      </div>
+    </section>
+
+    <section class="card playlist">
+      <div class="playlist-top">
+        <div>
+          <div style="font-size:1.8rem;font-weight:800;">Spotify afspeellijst</div>
+          <div class="subtitle" style="font-size:1rem;max-width:550px;">
+            Een klein lijstje om alvast warm te draaien voor de grote avond.
+          </div>
+        </div>
+        <a class="button" href="https://open.spotify.com/playlist/37i9dQZF1DZ06evO3ZsXzq" target="_blank" rel="noreferrer">
+          Open “This Is Harry Styles”
+        </a>
+      </div>
+
+      <div class="songs">
+        <div class="song">
+          <div class="song-title">As It Was</div>
+          <iframe src="https://open.spotify.com/embed/track/4Dvkj6JhhA12EX05fT7y2e" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+        </div>
+        <div class="song">
+          <div class="song-title">Sign of the Times</div>
+          <iframe src="https://open.spotify.com/embed/track/5ELRkzdzz0HvGpMDlfZHkV" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+        </div>
+        <div class="song">
+          <div class="song-title">Late Night Talking</div>
+          <iframe src="https://open.spotify.com/embed/track/5M7h24t295Z8MnyRAcjQbD" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+        </div>
+        <div class="song">
+          <div class="song-title">Watermelon Sugar</div>
+          <iframe src="https://open.spotify.com/embed/track/0VaOmR9bNExPT1NzmvroY3" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer">Nog even… en dan heel hard meezingen, met glitter natuurlijk.</div>
+  </div>
+
+  <script>
+    const concertDate = new Date("2026-05-27T19:30:00");
+    const dailyFacts = [
+      "Harry Styles won in 2023 de Grammy voor Album of the Year met Harry's House.",
+      "Zijn motto ‘Treat people with kindness’ groeide uit tot een herkenbaar symbool voor fans.",
+      "Harry begon wereldwijd door te breken als lid van One Direction voordat hij solo verderging.",
+      "As It Was became one of his biggest global hits and dominated charts in multiple countries.",
+      "Zijn shows staan bekend om opvallende outfits, veel publieksinteractie en een feestelijke sfeer.",
+      "Harry's House marked a big step in his sound, with a lighter and more playful pop style.",
+      "Sign of the Times was his debuutsingle as solo artist and immediately drew major attention.",
+      "Love On Tour became famous for its exuberant atmosphere and strong fan community feeling."
+    ];
+
+    function getFactOfTheDay() {
+      const now = new Date();
+      const start = new Date(now.getFullYear(), 0, 0);
+      const diff = now - start;
+      const oneDay = 1000 * 60 * 60 * 24;
+      const dayOfYear = Math.floor(diff / oneDay);
+      return dailyFacts[dayOfYear % dailyFacts.length];
+    }
+
+    function updateCountdown() {
+      const now = new Date();
+      const diff = concertDate - now;
+      const daysEl = document.getElementById("days");
+      const hoursEl = document.getElementById("hours");
+      const minutesEl = document.getElementById("minutes");
+      const headline = document.getElementById("headline");
+
+      if (diff <= 0) {
+        daysEl.textContent = "0";
+        hoursEl.textContent = "0";
+        minutesEl.textContent = "0";
+        headline.textContent = "Het is concertdag! ✨";
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+
+      daysEl.textContent = days;
+      hoursEl.textContent = hours;
+      minutesEl.textContent = minutes;
+      headline.textContent = `Nog ${days} dagen tot het concert ✨`;
+    }
+
+    document.getElementById("fact").textContent = getFactOfTheDay();
+    updateCountdown();
+    setInterval(() => {
+      document.getElementById("fact").textContent = getFactOfTheDay();
+      updateCountdown();
+    }, 60000);
+  </script>
+</body>
+</html>
