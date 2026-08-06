@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -87,8 +86,8 @@
     .scene {
       width: 100%;
       max-width: 600px;
-      background: rgba(248, 244, 237, 0.66);
-      border: 1px solid rgba(255, 255, 255, 0.5);
+      background: rgba(248, 244, 237, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.55);
       border-radius: 20px;
       box-shadow: 0 30px 70px rgba(10, 7, 4, 0.5);
       backdrop-filter: blur(16px) saturate(1.1);
@@ -201,7 +200,7 @@
       min-height: 24px;
       font-size: 15px;
       font-style: italic;
-      color: var(--warm);
+      color: #7a4a1f;
       margin: 16px 2px 0;
       transition: opacity 0.4s ease;
     }
@@ -225,6 +224,10 @@
       transition: color 0.2s ease, border-color 0.2s ease;
     }
     .leave:hover { color: var(--ink); border-color: var(--accent); }
+
+    /* sound toggle — mirror of the leave button, top-left */
+    .sound { right: auto; left: 24px; }
+    .sound.off { color: var(--faint); opacity: 0.8; }
 
     .clock {
       font-size: 64px;
@@ -272,6 +275,8 @@
   </style>
 </head>
 <body>
+  <audio id="bgm" src="audio/ambience.wav" loop preload="auto"></audio>
+  <button class="leave sound" id="soundBtn" aria-pressed="true">♪ Sound on</button>
   <button class="leave" id="leaveBtn">Leave experience</button>
   <div class="scene-bg no-image" id="bg"></div>
   <div class="stage">
@@ -604,6 +609,63 @@
       `, () => {
         document.getElementById("restart").onclick = sceneWelcome;
       });
+    };
+
+    /* ============================================================
+       Background music — starts on first interaction (autoplay-safe),
+       gentle fade in/out, and a toggle the player can always reach.
+    ============================================================ */
+    const bgm = document.getElementById("bgm");
+    const soundBtn = document.getElementById("soundBtn");
+    const TARGET_VOL = 0.55;
+    let musicOn = true;
+    let started = false;
+    let fadeTimer = null;
+
+    function fadeTo(target, done) {
+      clearInterval(fadeTimer);
+      fadeTimer = setInterval(() => {
+        const diff = target - bgm.volume;
+        if (Math.abs(diff) < 0.02) {
+          bgm.volume = Math.max(0, Math.min(1, target));
+          clearInterval(fadeTimer);
+          if (done) done();
+        } else {
+          bgm.volume = Math.max(0, Math.min(1, bgm.volume + diff * 0.08));
+        }
+      }, 40);
+    }
+
+    function startMusic() {
+      if (started || !musicOn) return;
+      bgm.volume = 0;
+      const p = bgm.play();
+      if (p && p.then) {
+        p.then(() => { started = true; fadeTo(TARGET_VOL); }).catch(() => {});
+      } else {
+        started = true; fadeTo(TARGET_VOL);
+      }
+    }
+
+    // first genuine user gesture unlocks audio
+    ["pointerdown", "keydown", "touchstart"].forEach(ev =>
+      document.addEventListener(ev, startMusic, { once: true })
+    );
+
+    soundBtn.onclick = (e) => {
+      e.stopPropagation();
+      musicOn = !musicOn;
+      soundBtn.setAttribute("aria-pressed", String(musicOn));
+      if (musicOn) {
+        soundBtn.textContent = "♪ Sound on";
+        soundBtn.classList.remove("off");
+        if (!started) startMusic(); else fadeTo(TARGET_VOL);
+      } else {
+        soundBtn.textContent = "♪ Sound off";
+        soundBtn.classList.add("off");
+        fadeTo(0, () => bgm.pause());
+        started = false;
+      }
     };
 
     // start
