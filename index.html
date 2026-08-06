@@ -1,389 +1,613 @@
+
 <!DOCTYPE html>
-<html lang="nl">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Harry Styles Countdown</title>
+  <title>An Ordinary Evening — a glimpse of disorientation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
-    :root{
-      --pink:#ec4899;
-      --soft-pink:#fde7f3;
-      --gold:#f59e0b;
-      --cream:#fff8e7;
-      --text:#1f2937;
-      --muted:#6b7280;
-      --card:#ffffffcc;
-      --border:#f5c7df;
+    :root {
+      --ink: #3d3d3d;
+      --muted: #6e6e6e;
+      --faint: #9a9a9a;
+      --line: #e4e0d8;
+      --paper: #f4f1ea;
+      --card: #ffffff;
+      --accent: #7c6f5b;
+      --warm: #b8895a;
+      --shadow: 0 24px 60px rgba(60, 50, 35, 0.16);
     }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-      color:var(--text);
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; }
+
+    body {
+      font-family: "Manrope", system-ui, -apple-system, sans-serif;
+      color: var(--ink);
+      background: #1b1b24;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100%;
+      overflow-x: hidden;
+    }
+
+    /* Full-bleed scene background image + atmosphere overlay */
+    .scene-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background-size: cover;
+      background-position: center;
+      transition: opacity 1.2s ease, filter 1.2s ease;
+    }
+    .scene-bg::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      transition: background 1.4s ease;
+      /* base: cozy vignette so the panel reads */
+      background: radial-gradient(ellipse 80% 80% at center, rgba(20,14,8,0) 30%, rgba(20,14,8,0.55) 100%);
+    }
+    .scene-bg.dusk::after {
       background:
-        radial-gradient(circle at top, #ffffff 0%, #ffe4ec 35%, #fff5d6 100%);
-      min-height:100vh;
-      overflow-x:hidden;
+        linear-gradient(180deg, rgba(60,30,40,0.30) 0%, rgba(25,18,30,0.55) 100%),
+        radial-gradient(ellipse 80% 80% at center, rgba(20,14,8,0) 25%, rgba(20,14,8,0.5) 100%);
     }
-    .sparkle{
-      position:fixed;
-      font-size:22px;
-      opacity:.65;
-      animation: pulse 2.4s ease-in-out infinite;
-      pointer-events:none;
-      user-select:none;
+    .scene-bg.night::after {
+      background:
+        linear-gradient(180deg, rgba(4,6,20,0.86) 0%, rgba(1,2,9,0.94) 100%),
+        radial-gradient(ellipse 65% 65% at center, rgba(0,0,0,0) 12%, rgba(0,0,0,0.72) 100%);
     }
-    @keyframes pulse{
-      0%,100%{transform:scale(1); opacity:.35}
-      50%{transform:scale(1.25); opacity:.9}
+    .scene-bg.warm::after {
+      background:
+        radial-gradient(ellipse 80% 80% at 50% 40%, rgba(70,40,12,0) 30%, rgba(40,22,6,0.5) 100%);
     }
-    .wrap{
-      max-width:1100px;
-      margin:0 auto;
-      padding:24px 16px 40px;
-      position:relative;
-      z-index:1;
+    /* Atmospheric fallbacks when no image exists yet */
+    .scene-bg.no-image { background: linear-gradient(180deg, #f4f1ea 0%, #ece7dc 100%); }
+    .scene-bg.no-image.warm {
+      background: radial-gradient(ellipse 90% 90% at 50% 35%, #7a5026 0%, #43260f 60%, #2a160a 100%);
     }
-    .card{
-      background:var(--card);
-      backdrop-filter: blur(10px);
-      border:1px solid var(--border);
-      border-radius:30px;
-      box-shadow:0 8px 24px rgba(0,0,0,.06);
+    .scene-bg.no-image.clear {
+      background: radial-gradient(ellipse 80% 70% at 50% 10%, #fbf9f4 0%, #ece7dc 70%);
     }
-    .hero{
-      padding:28px;
-      position:relative;
-      overflow:hidden;
+    .scene-bg.no-image::after { background: none; }
+
+    .stage {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 88px 24px 64px;
     }
-    .hero:before,.hero:after{
-      content:"";
-      position:absolute;
-      width:180px;height:180px;border-radius:50%;
-      filter:blur(30px);
-      opacity:.45;
+
+    .scene {
+      width: 100%;
+      max-width: 600px;
+      background: rgba(248, 244, 237, 0.66);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 20px;
+      box-shadow: 0 30px 70px rgba(10, 7, 4, 0.5);
+      backdrop-filter: blur(16px) saturate(1.1);
+      -webkit-backdrop-filter: blur(16px) saturate(1.1);
+      padding: 44px 44px 40px;
+      transition: opacity 0.7s ease, transform 0.7s ease;
     }
-    .hero:before{right:-40px;top:-40px;background:#f9a8d4}
-    .hero:after{left:-40px;bottom:-40px;background:#fcd34d}
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px 14px;
-      border-radius:999px;
-      border:1px solid #f3bdd8;
-      background:linear-gradient(90deg,#fff1f7,#fff7e7);
-      color:#be185d;
-      font-size:14px;
-      font-weight:600;
-      position:relative;
-      z-index:1;
+
+    .scene.fade-out { opacity: 0; transform: translateY(10px); }
+    .scene.fade-in  { opacity: 0; transform: translateY(14px); animation: rise 0.8s ease forwards; }
+    @keyframes rise { to { opacity: 1; transform: translateY(0); } }
+
+    .eyebrow {
+      font-size: 13px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--faint);
+      font-weight: 600;
+      margin-bottom: 14px;
     }
-    h1{
-      font-size:clamp(2rem,5vw,4rem);
-      margin:16px 0 10px;
-      line-height:1.05;
-      position:relative;
-      z-index:1;
+
+    h1 {
+      font-size: 38px;
+      line-height: 1.12;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 18px;
     }
-    .subtitle{
-      font-size:1.1rem;
-      color:var(--muted);
-      max-width:760px;
-      position:relative;
-      z-index:1;
-      line-height:1.6;
+
+    h2 {
+      font-size: 27px;
+      line-height: 1.2;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      margin-bottom: 16px;
     }
-    .maan{
-      display:inline-block;
-      margin-top:18px;
-      padding:12px 18px;
-      border-radius:999px;
-      background:linear-gradient(90deg,#d946ef,#ec4899,#f59e0b);
-      color:white;
-      font-weight:800;
-      letter-spacing:.2px;
-      box-shadow:0 10px 24px rgba(236,72,153,.25);
-      position:relative;
-      z-index:1;
+
+    p {
+      font-size: 18px;
+      line-height: 1.6;
+      color: var(--muted);
+      margin-bottom: 16px;
     }
-    .grid{
-      display:grid;
-      grid-template-columns:2fr 1fr;
-      gap:20px;
-      margin-top:20px;
+    p strong { color: var(--ink); font-weight: 600; }
+
+    .goal {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 15px;
+      color: var(--muted);
+      margin-bottom: 22px;
+      transition: opacity 1s ease;
     }
-    .photo-card{
-      overflow:hidden;
+    .goal .label {
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-size: 12px;
+      white-space: nowrap;
+      padding-top: 1px;
     }
-    .photo-wrap{
-      position:relative;
-      min-height:300px;
+    .goal.dim { opacity: 0.35; }
+
+    .options { display: grid; gap: 12px; margin-top: 6px; }
+
+    button.choice {
+      font-family: inherit;
+      text-align: left;
+      font-size: 17px;
+      font-weight: 500;
+      color: var(--ink);
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px 18px;
+      cursor: pointer;
+      transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
     }
-    .photo-wrap img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      display:block;
-      min-height:300px;
-      max-height:460px;
+    button.choice:hover {
+      border-color: var(--accent);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 18px rgba(60, 50, 35, 0.1);
     }
-    .photo-overlay{
-      position:absolute;
-      inset:0;
-      background:linear-gradient(to top, rgba(0,0,0,.58), rgba(0,0,0,.08));
-      display:flex;
-      align-items:flex-end;
-      padding:26px;
-      color:white;
+    button.choice .sub { display: block; font-size: 14px; color: var(--faint); margin-top: 3px; font-weight: 400; }
+    button.choice.done { opacity: 0.45; pointer-events: none; }
+
+    .cta {
+      margin-top: 26px;
+      font-family: inherit;
+      font-size: 17px;
+      font-weight: 600;
+      color: #fff;
+      background: var(--accent);
+      border: none;
+      border-radius: 999px;
+      padding: 15px 30px;
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 10px 22px rgba(124, 111, 91, 0.3);
     }
-    .side{
-      padding:24px;
-      display:flex;
-      flex-direction:column;
-      gap:16px;
+    .cta:hover { transform: translateY(-2px); background: #6b5f4d; }
+
+    .feedback {
+      min-height: 24px;
+      font-size: 15px;
+      font-style: italic;
+      color: var(--warm);
+      margin: 16px 2px 0;
+      transition: opacity 0.4s ease;
     }
-    .box{
-      border-radius:24px;
-      padding:18px;
-      border:1px solid var(--border);
-      background:linear-gradient(135deg,#fff7fb,#fff8e7);
+
+    /* persistent, reliable exit — the player can always leave */
+    .leave {
+      position: fixed;
+      top: 22px;
+      right: 24px;
+      z-index: 50;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--faint);
+      background: rgba(255,255,255,0.7);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 8px 16px;
+      cursor: pointer;
+      backdrop-filter: blur(6px);
+      transition: color 0.2s ease, border-color 0.2s ease;
     }
-    .label{
-      font-size:.9rem;
-      color:var(--muted);
-      margin-bottom:8px;
+    .leave:hover { color: var(--ink); border-color: var(--accent); }
+
+    .clock {
+      font-size: 64px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-align: center;
+      color: var(--ink);
+      margin: 8px 0 20px;
+      font-variant-numeric: tabular-nums;
     }
-    .fact{
-      line-height:1.7;
+
+    .takeaways { margin: 8px 0 8px; padding: 0; list-style: none; }
+    .takeaways li {
+      font-size: 16px;
+      line-height: 1.5;
+      color: var(--muted);
+      padding: 10px 0 10px 28px;
+      position: relative;
+      border-top: 1px solid var(--line);
     }
-    .stats{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:14px;
-      margin-top:20px;
+    .takeaways li:first-child { border-top: none; }
+    .takeaways li::before {
+      content: "";
+      position: absolute;
+      left: 4px; top: 17px;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--warm);
     }
-    .stat{
-      padding:18px;
-      text-align:center;
+    .takeaways li b { color: var(--ink); font-weight: 600; }
+
+    .footnote { font-size: 13px; color: var(--faint); margin-top: 22px; line-height: 1.5; }
+    .footnote a { color: var(--accent); }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, .scene, .scene.fade-in { animation: none !important; transition: opacity 0.2s ease !important; transform: none !important; }
     }
-    .stat .small{
-      color:#db2777;
-      font-size:.9rem;
-      margin-bottom:8px;
-    }
-    .stat .big{
-      font-size:2rem;
-      font-weight:800;
-    }
-    .playlist{
-      margin-top:20px;
-      padding:24px;
-    }
-    .playlist-top{
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap:16px;
-      flex-wrap:wrap;
-    }
-    .button{
-      text-decoration:none;
-      color:var(--text);
-      border:1px solid var(--border);
-      border-radius:999px;
-      padding:10px 16px;
-      background:white;
-      font-weight:600;
-    }
-    .songs{
-      display:grid;
-      grid-template-columns:repeat(2,1fr);
-      gap:16px;
-      margin-top:18px;
-    }
-    .song{
-      border:1px solid var(--border);
-      border-radius:24px;
-      padding:12px;
-      background:linear-gradient(135deg,#ffffff,#fff1f7);
-    }
-    .song-title{
-      font-weight:700;
-      padding:6px 8px 12px;
-    }
-    iframe{
-      width:100%;
-      border:0;
-      border-radius:18px;
-      height:152px;
-    }
-    .footer{
-      text-align:center;
-      color:var(--muted);
-      margin-top:20px;
-      font-size:.95rem;
-    }
-    @media (max-width: 840px){
-      .grid{grid-template-columns:1fr}
-      .songs{grid-template-columns:1fr}
+
+    @media (max-width: 560px) {
+      .scene { padding: 32px 24px 30px; }
+      h1 { font-size: 30px; }
+      h2 { font-size: 23px; }
+      p { font-size: 16px; }
     }
   </style>
 </head>
 <body>
-  <div class="sparkle" style="top:7%; left:10%;">✨</div>
-  <div class="sparkle" style="top:12%; right:12%; animation-delay:.6s;">⭐</div>
-  <div class="sparkle" style="top:30%; left:17%; animation-delay:1.2s;">✨</div>
-  <div class="sparkle" style="top:44%; right:20%; animation-delay:.9s;">✨</div>
-  <div class="sparkle" style="bottom:18%; left:8%; animation-delay:1.5s;">⭐</div>
-  <div class="sparkle" style="bottom:8%; right:10%; animation-delay:.3s;">✨</div>
-
-  <div class="wrap">
-    <section class="card hero">
-      <div class="badge">✨ Harry Styles concert dashboard</div>
-      <h1 id="headline">Nog ... dagen tot het concert ✨</h1>
-      <div class="subtitle">
-        Aftellen naar woensdag 27 mei 2026. Tijd om alvast in de sfeer te komen met glitter,
-        een dagelijkse Harry-fact en jullie eigen fan message.
-      </div>
-      <div class="maan">✨ Mae & Maan love Harry ✨</div>
-    </section>
-
-    <section class="grid">
-      <div class="card photo-card">
-        <div class="photo-wrap">
-          <img src="https://commons.wikimedia.org/wiki/Special:FilePath/HarryStyles2023.jpg" alt="Harry Styles">
-          <div class="photo-overlay">
-            <div>
-              <div style="font-size:.85rem;letter-spacing:.2em;text-transform:uppercase;opacity:.85;">Concert mood</div>
-              <div style="font-size:2rem;font-weight:800;margin-top:8px;">Harry Styles</div>
-              <div style="margin-top:10px;max-width:560px;line-height:1.6;opacity:.95;">Zet je glitter, flair en favoriete meezingnummers maar alvast klaar.</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <aside class="card side">
-        <div>
-          <div class="label">Weetje van vandaag</div>
-          <div style="font-size:1.5rem;font-weight:800;">Dagelijkse Harry-fact</div>
-          <div class="fact" id="fact" style="margin-top:10px;"></div>
-        </div>
-
-        <div class="box">
-          <div class="label">Quote</div>
-          <div style="font-size:1.15rem;font-weight:700;line-height:1.7;">“Treat people with kindness.”</div>
-        </div>
-
-        <div class="label">Concertdatum: <strong style="color:#374151;">27 mei 2026</strong></div>
-      </aside>
-    </section>
-
-    <section class="stats">
-      <div class="card stat">
-        <div class="small">Dagen</div>
-        <div class="big" id="days">0</div>
-      </div>
-      <div class="card stat">
-        <div class="small">Uren</div>
-        <div class="big" id="hours">0</div>
-      </div>
-      <div class="card stat">
-        <div class="small">Minuten</div>
-        <div class="big" id="minutes">0</div>
-      </div>
-    </section>
-
-    <section class="card playlist">
-      <div class="playlist-top">
-        <div>
-          <div style="font-size:1.8rem;font-weight:800;">Spotify afspeellijst</div>
-          <div class="subtitle" style="font-size:1rem;max-width:550px;">
-            Een klein lijstje om alvast warm te draaien voor de grote avond.
-          </div>
-        </div>
-        <a class="button" href="https://open.spotify.com/playlist/37i9dQZF1DZ06evO3ZsXzq" target="_blank" rel="noreferrer">
-          Open “This Is Harry Styles”
-        </a>
-      </div>
-
-      <div class="songs">
-        <div class="song">
-          <div class="song-title">As It Was</div>
-          <iframe src="https://open.spotify.com/embed/track/4Dvkj6JhhA12EX05fT7y2e" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-        </div>
-        <div class="song">
-          <div class="song-title">Sign of the Times</div>
-          <iframe src="https://open.spotify.com/embed/track/5ELRkzdzz0HvGpMDlfZHkV" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-        </div>
-        <div class="song">
-          <div class="song-title">Late Night Talking</div>
-          <iframe src="https://open.spotify.com/embed/track/5M7h24t295Z8MnyRAcjQbD" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-        </div>
-        <div class="song">
-          <div class="song-title">Watermelon Sugar</div>
-          <iframe src="https://open.spotify.com/embed/track/0VaOmR9bNExPT1NzmvroY3" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-        </div>
-      </div>
-    </section>
-
-    <div class="footer">Nog even… en dan heel hard meezingen, met glitter natuurlijk.</div>
+  <button class="leave" id="leaveBtn">Leave experience</button>
+  <div class="scene-bg no-image" id="bg"></div>
+  <div class="stage">
+    <div class="scene" id="scene"></div>
   </div>
 
   <script>
-    const concertDate = new Date("2026-05-27T19:30:00");
-    const dailyFacts = [
-      "Harry Styles won in 2023 de Grammy voor Album of the Year met Harry's House.",
-      "Zijn motto ‘Treat people with kindness’ groeide uit tot een herkenbaar symbool voor fans.",
-      "Harry begon wereldwijd door te breken als lid van One Direction voordat hij solo verderging.",
-      "As It Was became one of his biggest global hits and dominated charts in multiple countries.",
-      "Zijn shows staan bekend om opvallende outfits, veel publieksinteractie en een feestelijke sfeer.",
-      "Harry's House marked a big step in his sound, with a lighter and more playful pop style.",
-      "Sign of the Times was his debuutsingle as solo artist and immediately drew major attention.",
-      "Love On Tour became famous for its exuberant atmosphere and strong fan community feeling."
+    "use strict";
+
+    const stage = document.getElementById("scene");
+    const bgEl = document.getElementById("bg");
+    const body = document.body;
+
+    // Background art per scene. Reused with different overlays as the
+    // experience darkens.
+    const BG = {
+      living: "images/living-room.png",
+      hallway: "images/doors-hallway.png",
+      kitchen: "images/kitchen.png",
+    };
+
+    // imgKey: key in BG (or null for a plain atmospheric backdrop)
+    // overlay: "", "dusk", "night", "warm", or "clear"
+    function setScene(imgKey, overlay) {
+      const src = imgKey ? BG[imgKey] : null;
+      const noImage = !src;
+      bgEl.className = "scene-bg" + (overlay ? " " + overlay : "") + (noImage ? " no-image" : "");
+      bgEl.style.backgroundImage = src ? `url("${src}")` : "none";
+    }
+
+    // Render a scene's HTML with a gentle transition.
+    function render(html, after) {
+      stage.classList.add("fade-out");
+      setTimeout(() => {
+        stage.innerHTML = html;
+        stage.classList.remove("fade-out");
+        stage.classList.add("fade-in");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        if (after) after();
+      }, 360);
+    }
+
+    function shuffle(arr) {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    /* ============================================================
+       SCENE 0 — Welcome
+    ============================================================ */
+    function sceneWelcome() {
+      setScene("living", "");
+      render(`
+        <div class="eyebrow">A glimpse of disorientation</div>
+        <h1>An Ordinary Evening</h1>
+        <p>For the next few minutes, simple things won't be simple. Doors won't lead where you expect. A small task will slip out of order. Time may not behave.</p>
+        <p>This is a gentle glimpse of <strong>disorientation</strong> — one of the most common and frightening experiences of living with dementia.</p>
+        <p>There are no wrong answers, and nothing to win. When it feels confusing, that's the point. You can leave at any time using the button in the corner.</p>
+        <button class="cta" id="next">Begin</button>
+      `, () => {
+        document.getElementById("next").onclick = sceneDoors;
+      });
+    }
+
+    /* ============================================================
+       SCENE 1 — Waking: find the kitchen (spatial)
+    ============================================================ */
+    let doorAttempts = 0;
+    const doorLabels = [
+      { name: "The door on the left", sub: "A coat is hanging beside it." },
+      { name: "The door straight ahead", sub: "You can see a sliver of window." },
+      { name: "The door on the right", sub: "A hallway, you think." },
+      { name: "The narrow door", sub: "Was this always here?" },
+    ];
+    const wrongRooms = [
+      "You step through. It's the bedroom. The bed is made. You don't remember making it.",
+      "A bathroom. The tap is dripping. This isn't where you meant to go.",
+      "The hallway again. Or is it a different hallway? They look the same.",
+      "A room full of boxes. You're not sure whose they are.",
     ];
 
-    function getFactOfTheDay() {
-      const now = new Date();
-      const start = new Date(now.getFullYear(), 0, 0);
-      const diff = now - start;
-      const oneDay = 1000 * 60 * 60 * 24;
-      const dayOfYear = Math.floor(diff / oneDay);
-      return dailyFacts[dayOfYear % dailyFacts.length];
+    function sceneDoors() {
+      setScene("hallway", "");
+      const doors = shuffle(doorLabels).slice(0, 3);
+      // kitchen is hidden behind a random one; player can't tell which
+      const kitchenIndex = Math.floor(Math.random() * 3);
+
+      render(`
+        <div class="eyebrow">The armchair</div>
+        <h2>You wanted to do something</h2>
+        <p>You're sitting in your armchair. You were going to... yes — make a cup of tea. The kitchen is just through a door. You've walked it a thousand times.</p>
+        <div class="goal" id="goal"><span class="label">Trying to</span><span>Find the kitchen.</span></div>
+        <div class="options" id="opts"></div>
+        <div class="feedback" id="fb"></div>
+      `, () => {
+        const opts = document.getElementById("opts");
+        const fb = document.getElementById("fb");
+        doors.forEach((d, i) => {
+          const b = document.createElement("button");
+          b.className = "choice";
+          b.innerHTML = `${d.name}<span class="sub">${d.sub}</span>`;
+          b.onclick = () => {
+            doorAttempts++;
+            // After a few tries, mercy: the next door is the kitchen
+            const isKitchen = (i === kitchenIndex) || doorAttempts >= 3;
+            if (isKitchen) {
+              fb.textContent = "This one. Finally — the kitchen. The kettle is on the counter.";
+              setTimeout(sceneKettle, 1400);
+            } else {
+              fb.textContent = wrongRooms[Math.floor(Math.random() * wrongRooms.length)];
+              // the room rearranges itself for the next try
+              setTimeout(sceneDoors, 1600);
+            }
+          };
+          opts.appendChild(b);
+        });
+      });
     }
 
-    function updateCountdown() {
-      const now = new Date();
-      const diff = concertDate - now;
-      const daysEl = document.getElementById("days");
-      const hoursEl = document.getElementById("hours");
-      const minutesEl = document.getElementById("minutes");
-      const headline = document.getElementById("headline");
+    /* ============================================================
+       SCENE 2 — The kettle: make tea (task sequencing)
+    ============================================================ */
+    const teaSteps = [
+      { id: "fill",   text: "Fill the kettle with water" },
+      { id: "boil",   text: "Switch the kettle on" },
+      { id: "cup",    text: "Put a cup on the counter" },
+      { id: "bag",    text: "Drop a teabag in the cup" },
+      { id: "pour",   text: "Pour the water in" },
+    ];
+    let teaProgress = 0;
+    let teaWrong = 0;
+    // the goal text drifts as confusion grows
+    const teaGoalText = [
+      "Make a cup of tea.",
+      "Make a cup of tea. (Wasn't it tea? Or was it soup?)",
+      "You were making... something hot. Tea. Yes, tea.",
+    ];
 
-      if (diff <= 0) {
-        daysEl.textContent = "0";
-        hoursEl.textContent = "0";
-        minutesEl.textContent = "0";
-        headline.textContent = "Het is concertdag! ✨";
-        return;
-      }
-
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-      const minutes = Math.floor((diff / (1000 * 60)) % 60);
-
-      daysEl.textContent = days;
-      hoursEl.textContent = hours;
-      minutesEl.textContent = minutes;
-      headline.textContent = `Nog ${days} dagen tot het concert ✨`;
+    function sceneKettle() {
+      setScene("kitchen", "warm");
+      const shown = shuffle(teaSteps);
+      const goalText = teaGoalText[Math.min(teaWrong, teaGoalText.length - 1)];
+      render(`
+        <div class="eyebrow">The kitchen</div>
+        <h2>Now, the tea</h2>
+        <p>Everything you need is right here. You just have to do it in the right order. You know this. You've done it every day for sixty years.</p>
+        <div class="goal" id="goal"><span class="label">Trying to</span><span id="goalText">${goalText}</span></div>
+        <div class="options" id="opts"></div>
+        <div class="feedback" id="fb"></div>
+      `, () => {
+        const opts = document.getElementById("opts");
+        const fb = document.getElementById("fb");
+        shown.forEach((s) => {
+          const b = document.createElement("button");
+          b.className = "choice";
+          b.textContent = s.text;
+          const alreadyDone = teaSteps.indexOf(teaSteps.find(t => t.id === s.id)) < teaProgress;
+          if (alreadyDone) b.classList.add("done");
+          b.onclick = () => {
+            const correctNext = teaSteps[teaProgress];
+            if (s.id === correctNext.id) {
+              teaProgress++;
+              if (teaProgress >= teaSteps.length) {
+                fb.textContent = "Steam rises from the cup. You made it. You think you made it.";
+                setTimeout(sceneTime, 1700);
+              } else {
+                fb.textContent = "Yes. That felt right.";
+                setTimeout(sceneKettle, 900); // counter rearranges
+              }
+            } else {
+              teaWrong++;
+              fb.textContent = teaWrong % 2 === 0
+                ? "You've already done that. Haven't you? You put it down and lose the thread."
+                : "Wait — was that next? The steps won't stay still in your head.";
+              setTimeout(sceneKettle, 1300);
+            }
+          };
+          opts.appendChild(b);
+        });
+      });
     }
 
-    document.getElementById("fact").textContent = getFactOfTheDay();
-    updateCountdown();
-    setInterval(() => {
-      document.getElementById("fact").textContent = getFactOfTheDay();
-      updateCountdown();
-    }, 60000);
+    /* ============================================================
+       SCENE 3 — Time slips (temporal)
+    ============================================================ */
+    function sceneTime() {
+      setScene("living", "dusk");
+      render(`
+        <div class="eyebrow">The window</div>
+        <h2>When did it get dark?</h2>
+        <p>You sit down with your tea and look up. Outside, the light has gone. Wasn't it morning a moment ago? You were sure it was morning.</p>
+        <div class="clock" id="clock">3:00</div>
+        <p>The clock says three. But three in the afternoon, or three at night? Someone is coming to visit. Or — have they already been?</p>
+        <div class="options" id="opts"></div>
+        <div class="feedback" id="fb"></div>
+      `, () => {
+        const opts = document.getElementById("opts");
+        const fb = document.getElementById("fb");
+        const choices = [
+          { t: "It's afternoon. They haven't come yet.", r: "But your tea has gone cold, and you don't remember it getting that way." },
+          { t: "It's the middle of the night.", r: "Then why is the table set for two? You don't remember setting it." },
+          { t: "I don't know what time it is.", r: "That's the truth of it. The day has come loose from its hours." },
+        ];
+        choices.forEach((c) => {
+          const b = document.createElement("button");
+          b.className = "choice";
+          b.textContent = c.t;
+          b.onclick = () => {
+            fb.textContent = c.r;
+            setScene("living", "night");
+            document.getElementById("clock").textContent = "—:—";
+            setTimeout(() => {
+              const cta = document.createElement("button");
+              cta.className = "cta";
+              cta.textContent = "A voice is calling you";
+              cta.onclick = sceneWayBack;
+              fb.after(cta);
+            }, 1500);
+          };
+          opts.appendChild(b);
+        });
+      });
+    }
+
+    /* ============================================================
+       SCENE 4 — Finding your way back (spatial, escalated)
+    ============================================================ */
+    let backMoves = 0;
+    function sceneWayBack() {
+      setScene("hallway", "night");
+      const exits = shuffle([
+        "Toward the warm light",
+        "Down the dark hallway",
+        "Through the room you don't recognise",
+        "Back the way you came",
+      ]).slice(0, 3);
+
+      render(`
+        <div class="eyebrow">Somewhere in the house</div>
+        <h2>Someone is calling you</h2>
+        <p>A voice — familiar, kind — is calling your name from another room. You want to go to it. You just have to find the way. The house has rearranged itself in the dark.</p>
+        <div class="goal"><span class="label">Trying to</span><span>Follow the voice home.</span></div>
+        <div class="options" id="opts"></div>
+        <div class="feedback" id="fb"></div>
+      `, () => {
+        const opts = document.getElementById("opts");
+        const fb = document.getElementById("fb");
+        const messages = [
+          "This room is colder. The voice is behind you now. Or ahead?",
+          "You've been here before. A minute ago? An hour? The voice calls again.",
+          "Doors you've never seen. But the voice is closer. Keep going.",
+        ];
+        exits.forEach((e) => {
+          const b = document.createElement("button");
+          b.className = "choice";
+          b.textContent = e;
+          b.onclick = () => {
+            backMoves++;
+            if (backMoves >= 3) {
+              fb.textContent = "";
+              setTimeout(sceneReunion, 500);
+            } else {
+              fb.textContent = messages[(backMoves - 1) % messages.length];
+              setTimeout(sceneWayBack, 1300);
+            }
+          };
+          opts.appendChild(b);
+        });
+      });
+    }
+
+    function sceneReunion() {
+      setScene("living", "warm");
+      render(`
+        <div class="eyebrow">The front room</div>
+        <h2>There you are</h2>
+        <p>A hand finds yours. A face you love, looking up at you. "There you are," she says softly. "It's evening, Mum. I'm here. You're home. Everything's alright."</p>
+        <p>The fear loosens its grip. For now, you are held.</p>
+        <button class="cta" id="next">Step out of the evening</button>
+      `, () => {
+        document.getElementById("next").onclick = sceneDebrief;
+      });
+    }
+
+    /* ============================================================
+       SCENE 5 — Debrief
+    ============================================================ */
+    function sceneDebrief() {
+      setScene(null, "clear");
+      render(`
+        <div class="eyebrow">Take a breath — you're back</div>
+        <h2>What you just felt</h2>
+        <p>The doors that wouldn't stay put. A task that scrambled in your hands. Time slipping loose. The relief when someone gentle found you.</p>
+        <p>This is a small, brief taste of <strong>disorientation</strong> in dementia. The hardest part is this: <strong>you could leave. They cannot.</strong> For someone living with it, this can be an ordinary Tuesday — not a few minutes, but the texture of a whole day.</p>
+        <h2 style="margin-top:28px">How to help someone feel less lost</h2>
+        <ul class="takeaways">
+          <li><b>Orient gently, don't quiz.</b> Instead of "Don't you remember?", try "It's evening, and I'm here with you."</li>
+          <li><b>Keep things constant.</b> Familiar layouts, routines, and objects in their usual places reduce the fear.</li>
+          <li><b>Offer fewer choices.</b> One step at a time is kinder than a whole task at once.</li>
+          <li><b>Reassure before you correct.</b> The feeling of safety matters more than the facts.</li>
+          <li><b>Be the calm voice.</b> Your tone and presence can be the hand that finds theirs.</li>
+        </ul>
+        <p class="footnote">
+          This is an empathy experience, not a medical simulation — everyone's reality is different.
+          To learn more or find support, the Alzheimer's Association (alz.org, helpline 800-272-3900)
+          and Alzheimer's Society (alzheimers.org.uk) are good places to start.
+        </p>
+        <button class="cta" id="again">Begin again</button>
+      `, () => {
+        doorAttempts = 0; teaProgress = 0; teaWrong = 0; backMoves = 0;
+        document.getElementById("again").onclick = sceneWelcome;
+      });
+    }
+
+    /* ============================================================
+       Leave button — always reliable
+    ============================================================ */
+    document.getElementById("leaveBtn").onclick = () => {
+      setScene(null, "clear");
+      doorAttempts = 0; teaProgress = 0; teaWrong = 0; backMoves = 0;
+      render(`
+        <div class="eyebrow">You stepped out</div>
+        <h2>You're here, and everything is clear</h2>
+        <p>Thank you for spending a few minutes inside that feeling. Even a glimpse can change how we sit with someone who lives there.</p>
+        <button class="cta" id="restart">Start again</button>
+      `, () => {
+        document.getElementById("restart").onclick = sceneWelcome;
+      });
+    };
+
+    // start
+    sceneWelcome();
   </script>
 </body>
 </html>
