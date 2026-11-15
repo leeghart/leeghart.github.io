@@ -7,8 +7,6 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Layers">
-<meta name="theme-color" content="#eef2f6" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#11161d" media="(prefers-color-scheme: dark)">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-180.png">
 <link rel="manifest" href="manifest.webmanifest">
@@ -97,10 +95,32 @@
   .linkbtn { color: var(--accent); font-weight: 500; padding: 8px 0; }
   .danger { color: #d64545; }
   .results button { display: block; width: 100%; text-align: left; padding: 10px 4px; border-bottom: 1px solid var(--line); }
+
+  /* weather photo background */
+  #bg, #shade { position: fixed; pointer-events: none; opacity: 0; transition: opacity .9s ease; }
+  #bg { inset: -60px; background: #222 center / cover no-repeat; filter: blur(9px) saturate(1.1); z-index: 0; }
+  #shade { inset: 0; z-index: 0; background: linear-gradient(180deg, rgba(0,0,0,var(--s1,.3)) 0%, rgba(0,0,0,var(--s2,.5)) 100%); }
+  html.photo #bg, html.photo #shade { opacity: 1; }
+  html.photo, html.photo body { background: #1d232b; }
+  #main { position: relative; z-index: 1; }
+  html.photo #main {
+    --ink: #fff; --muted: rgba(255,255,255,.8); --card: rgba(255,255,255,.15); --line: rgba(255,255,255,.22);
+    --accent: #fff; --accent-soft: rgba(255,255,255,.28); --shadow: none; color: #fff;
+  }
+  html.photo #main .item, html.photo #main .chip, html.photo #main .seg, html.photo #main .iconbtn,
+  html.photo #main .banner, html.photo #main .err {
+    -webkit-backdrop-filter: blur(14px) saturate(1.2); backdrop-filter: blur(14px) saturate(1.2);
+    border: 1px solid rgba(255,255,255,.18);
+  }
+  html.photo #main .hero, html.photo #main header, html.photo #main h2, html.photo #main #footnote { text-shadow: 0 1px 10px rgba(0,0,0,.35); }
+  html.photo #main .primary { background: rgba(255,255,255,.94); color: #18202a; }
+  html.photo #main a { color: inherit; }
+  #footnote a { color: inherit; }
 </style>
 </head>
 <body>
-
+<div id="bg"></div><div id="shade"></div>
+<main id="main">
 <header class="row spread">
   <button class="loc" id="locBtn" aria-label="Change location">
     <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
@@ -135,6 +155,7 @@
 <button class="secondary" id="rateNowBtn">Correct this suggestion now</button>
 
 <p class="small muted" style="text-align:center;margin-top:18px" id="footnote"></p>
+</main>
 
 <div class="scrim" id="scrim"></div>
 
@@ -359,7 +380,7 @@ async function loadWeather() {
     }
     $("#locName").textContent = loc.name;
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}` +
-      `&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,precipitation` +
+      `&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,precipitation,is_day` +
       `&hourly=temperature_2m,apparent_temperature,precipitation_probability,uv_index,weather_code,wind_speed_10m` +
       `&timezone=auto&forecast_days=2`;
     const j = await getJSON(url);
@@ -387,7 +408,7 @@ function parseWx(j) {
     uv: h.uv_index[i], code: h.weather_code[i], wind: h.wind_speed_10m[i],
   }));
   const c = j.current;
-  return { cur: { temp: c.temperature_2m, feels: c.apparent_temperature, code: c.weather_code, wind: c.wind_speed_10m }, hours };
+  return { cur: { temp: c.temperature_2m, feels: c.apparent_temperature, code: c.weather_code, wind: c.wind_speed_10m, isDay: c.is_day !== 0 }, hours };
 }
 
 const WINS = { now: 1, "3h": 3, "8h": 8 };
@@ -405,6 +426,46 @@ function windowVars() {
     uv: pick("uv", Math.max) ?? 0,
     temp: wx.cur.temp, code: wx.cur.code, wind: wx.cur.wind,
   };
+}
+
+/* ------------------------------------------------------------ backgrounds
+   Photos from Unsplash (Unsplash License). s1/s2 = darkening at top/bottom so text stays readable. */
+const PHOTOS = {
+  "clear-day":     { by: "Kellen Riggin",       url: "https://unsplash.com/photos/Ynde2kqOSBM", s1: .22, s2: .45 },
+  "partly-cloudy": { by: "Adrien Olichon",      url: "https://unsplash.com/photos/yOkNxeFoh-s", s1: .25, s2: .45 },
+  "overcast":      { by: "Max van den Oetelaar", url: "https://unsplash.com/photos/gPOLfyn5Ay0", s1: .28, s2: .5 },
+  "fog":           { by: "Anja van de Gronde",  url: "https://unsplash.com/photos/kp6PzpT45cc", s1: .3, s2: .5 },
+  "rain":          { by: "Hugh Stevenson",      url: "https://unsplash.com/photos/IMzgmOY89q8", s1: .3, s2: .5 },
+  "snow":          { by: "Kristaps Ungurs",     url: "https://unsplash.com/photos/B6GNKb0MTU4", s1: .35, s2: .55 },
+  "storm":         { by: "Luka Vovk",           url: "https://unsplash.com/photos/EngLPePzg7U", s1: .15, s2: .4 },
+  "clear-night":   { by: "Marek Piwnicki",      url: "https://unsplash.com/photos/ktllNfb9cBs", s1: .12, s2: .4 },
+  "cloudy-night":  { by: "Nastia Petruk",       url: "https://unsplash.com/photos/yMsIaWJuY0U", s1: .2, s2: .45 },
+};
+function sceneFor(code, isDay) {
+  if (code >= 95) return "storm";
+  if ((code >= 71 && code <= 77) || code === 85 || code === 86) return "snow";
+  if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) return "rain";
+  if (code === 45 || code === 48) return "fog";
+  if (code <= 1) return isDay ? "clear-day" : "clear-night";
+  if (code === 2) return isDay ? "partly-cloudy" : "cloudy-night";
+  return isDay ? "overcast" : "cloudy-night";
+}
+let scene = null;
+function setScene(name, isDay) {
+  const root = document.documentElement;
+  if (!name) { root.classList.remove("photo"); scene = null; return; }
+  if (name === scene) return;
+  scene = name;
+  const p = PHOTOS[name], dark = !isDay && !name.includes("night") ? .2 : 0; // rain/snow/fog after dark: extra shade
+  const img = new Image();
+  img.onload = () => {
+    if (scene !== name) return;
+    const bg = document.getElementById("bg"), sh = document.getElementById("shade");
+    sh.style.setProperty("--s1", Math.min(.8, p.s1 + dark)); sh.style.setProperty("--s2", Math.min(.85, p.s2 + dark));
+    bg.style.backgroundImage = `url(bg/${name}.jpg)`;
+    root.classList.add("photo");
+  };
+  img.src = `bg/${name}.jpg`;
 }
 
 /* ---------------------------------------------------------------- render */
@@ -438,7 +499,9 @@ function render() {
 
   $("#feels").innerHTML = `${Math.round(v.feels)}°<small>feels like</small>`;
   const [desc, emo] = WMO[v.code] || ["", ""];
-  $("#cond").textContent = wx ? `${emo} ${desc} · ${Math.round(v.temp)}° actual` : "Manual temperature";
+  setScene(wx ? sceneFor(v.code, wx.cur.isDay !== false) : null, wx ? wx.cur.isDay !== false : true);
+  const night = wx && wx.cur.isDay === false && v.code <= 2;
+  $("#cond").textContent = wx ? `${night ? (v.code === 2 ? "☁️" : "🌙") : emo} ${desc} · ${Math.round(v.temp)}° actual` : "Manual temperature";
   const chips = [];
   if (wx && state.win !== "now") chips.push(`Feels ${Math.round(v.fMin)}° to ${Math.round(v.fMax)}°`);
   if (wx) chips.push(`💧 ${Math.round(v.rain)}% rain`, `💨 ${Math.round(v.wind)} km/h`, `UV ${round1(v.uv)}`);
@@ -453,7 +516,8 @@ function render() {
   if ($("#outfit").dataset.sig !== html) { $("#outfit").innerHTML = html; $("#outfit").dataset.sig = html; }
 
   const n = state.records.length;
-  $("#footnote").textContent = n ? `Calibrated on ${n} rating${n > 1 ? "s" : ""}. Weather: Open-Meteo.` : "Using default settings — rate your outfits to make it yours. Weather: Open-Meteo.";
+  const credit = scene ? ` Photo: <a href="${PHOTOS[scene].url}">${PHOTOS[scene].by}</a> / Unsplash.` : "";
+  $("#footnote").innerHTML = (n ? `Calibrated on ${n} rating${n > 1 ? "s" : ""}.` : "Using default settings — rate your outfits to make it yours.") + " Weather: Open-Meteo." + credit;
   renderPending();
 }
 
