@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Layers">
+<meta name="theme-color" content="#eef2f6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#11161d" media="(prefers-color-scheme: dark)">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<title>Layers — what to wear</title>
+<style>
+  :root {
+    --bg: #eef2f6; --card: #ffffff; --ink: #18202a; --muted: #6b7684; --line: #dde3ea;
+    --accent: #2f6fde; --accent-soft: #e3ecfb; --warn: #d9822b; --ok: #2e9e6a;
+    --shadow: 0 1px 2px rgba(20,30,45,.06), 0 4px 16px rgba(20,30,45,.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #11161d; --card: #1b222c; --ink: #eef2f6; --muted: #96a1ae; --line: #2b3440;
+      --accent: #6b9cf5; --accent-soft: #23314a; --shadow: none;
+    }
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.4 -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif; }
+  body { padding: calc(env(safe-area-inset-top) + 12px) 16px calc(env(safe-area-inset-bottom) + 24px); max-width: 520px; margin: 0 auto; }
+  button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; }
+  .row { display: flex; align-items: center; gap: 8px; }
+  .spread { justify-content: space-between; }
+  .muted { color: var(--muted); }
+  .small { font-size: 13px; }
+
+  header .loc { font-weight: 600; font-size: 17px; display: flex; align-items: center; gap: 6px; padding: 6px 0; }
+  .iconbtn { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: var(--card); box-shadow: var(--shadow); }
+  .iconbtn svg { width: 20px; height: 20px; }
+
+  .hero { margin: 14px 0 16px; }
+  .hero .feels { font-size: 76px; font-weight: 200; letter-spacing: -2px; line-height: 1; }
+  .hero .feels small { font-size: 22px; font-weight: 400; letter-spacing: 0; color: var(--muted); margin-left: 4px; }
+  .hero .cond { font-size: 17px; margin-top: 6px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .chip { background: var(--card); border-radius: 999px; padding: 5px 11px; font-size: 13px; color: var(--muted); box-shadow: var(--shadow); }
+
+  .seg { display: flex; background: var(--card); border-radius: 12px; padding: 3px; box-shadow: var(--shadow); }
+  .seg button { flex: 1; padding: 8px 0; border-radius: 9px; font-size: 14px; font-weight: 500; color: var(--muted); }
+  .seg button.on { background: var(--accent-soft); color: var(--accent); }
+
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 600; margin: 22px 2px 10px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .item { background: var(--card); border-radius: 18px; padding: 14px 6px 12px; text-align: center; box-shadow: var(--shadow); animation: pop .25s ease both; }
+  .item svg { width: 54px; height: 54px; color: var(--accent); }
+  .item .lbl { font-size: 13px; font-weight: 500; margin-top: 6px; }
+  @keyframes pop { from { transform: scale(.92); opacity: 0; } to { transform: none; opacity: 1; } }
+
+  .primary { width: 100%; margin-top: 18px; padding: 15px; border-radius: 14px; background: var(--accent); color: #fff; font-weight: 600; font-size: 17px; }
+  .secondary { width: 100%; margin-top: 8px; padding: 12px; border-radius: 14px; color: var(--accent); font-weight: 500; }
+  .banner { background: var(--card); border-radius: 16px; padding: 14px; margin-top: 14px; box-shadow: var(--shadow); border-left: 4px solid var(--warn); }
+  .banner .acts { display: flex; gap: 8px; margin-top: 10px; }
+  .banner .acts button { padding: 8px 14px; border-radius: 10px; background: var(--accent); color: #fff; font-weight: 600; font-size: 14px; }
+  .banner .acts button.ghost { background: transparent; color: var(--muted); font-weight: 500; }
+  .err { background: var(--card); border-radius: 16px; padding: 14px; margin: 14px 0; box-shadow: var(--shadow); }
+  input[type=range] { width: 100%; }
+  .toast { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 24px); transform: translateX(-50%) translateY(20px);
+    background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 12px; font-size: 14px; opacity: 0; transition: .25s; pointer-events: none; max-width: 90vw; }
+  .toast.show { opacity: 1; transform: translateX(-50%); }
+
+  /* sheets */
+  .scrim { position: fixed; inset: 0; background: rgba(0,0,0,.35); opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 10; }
+  .scrim.open { opacity: 1; pointer-events: auto; }
+  .sheet { position: fixed; left: 0; right: 0; bottom: 0; max-height: 92vh; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    background: var(--bg); border-radius: 20px 20px 0 0; padding: 10px 16px calc(env(safe-area-inset-bottom) + 20px);
+    transform: translateY(105%); transition: transform .28s cubic-bezier(.2,.8,.2,1); z-index: 11; max-width: 520px; margin: 0 auto; }
+  .sheet.open { transform: none; }
+  .grab { width: 38px; height: 5px; border-radius: 3px; background: var(--line); margin: 0 auto 10px; }
+  .sheet h3 { margin: 4px 0 2px; font-size: 20px; }
+  .group { background: var(--card); border-radius: 14px; padding: 10px 12px; margin-top: 10px; box-shadow: var(--shadow); }
+  .group .gname { font-size: 13px; color: var(--muted); font-weight: 600; margin-bottom: 6px; display: flex; justify-content: space-between; }
+  .opts { display: flex; gap: 8px; }
+  .opt { flex: 1; border-radius: 12px; padding: 8px 4px 6px; border: 2px solid transparent; background: var(--bg); text-align: center; min-width: 0; }
+  .opt svg { width: 34px; height: 34px; color: var(--muted); }
+  .opt .t { font-size: 12px; margin-top: 2px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .opt.sel { border-color: var(--accent); background: var(--accent-soft); }
+  .opt.sel svg, .opt.sel .t { color: var(--accent); }
+  .opt .was { font-size: 10px; color: var(--muted); height: 12px; }
+  .tbl { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .tbl td { padding: 7px 2px; border-bottom: 1px solid var(--line); }
+  .tbl td:last-child { text-align: right; color: var(--muted); }
+  .hist { font-size: 13px; padding: 8px 0; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+  .hist button { color: var(--muted); padding: 4px 8px; }
+  .field { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); color: var(--ink); font: inherit; }
+  textarea.field { height: 110px; font-size: 12px; font-family: ui-monospace, Menlo, monospace; }
+  .linkbtn { color: var(--accent); font-weight: 500; padding: 8px 0; }
+  .danger { color: #d64545; }
+  .results button { display: block; width: 100%; text-align: left; padding: 10px 4px; border-bottom: 1px solid var(--line); }
+</style>
+</head>
+<body>
+
+<header class="row spread">
+  <button class="loc" id="locBtn" aria-label="Change location">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
+    <span id="locName">Locating…</span>
+  </button>
+  <div class="row">
+    <button class="iconbtn" id="refreshBtn" aria-label="Refresh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button>
+    <button class="iconbtn" id="settingsBtn" aria-label="Calibration and settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button>
+  </div>
+</header>
+
+<div id="pendingBox"></div>
+
+<section class="hero" id="hero">
+  <div class="feels" id="feels">–</div>
+  <div class="cond" id="cond">&nbsp;</div>
+  <div class="chips" id="chips"></div>
+</section>
+
+<div id="errBox"></div>
+
+<div class="seg" id="seg">
+  <button data-w="now">Now</button>
+  <button data-w="3h">Next 3 h</button>
+  <button data-w="8h">Next 8 h</button>
+</div>
+
+<h2>Wear</h2>
+<div class="grid" id="outfit"></div>
+
+<button class="primary" id="goBtn">I'm heading out</button>
+<button class="secondary" id="rateNowBtn">Correct this suggestion now</button>
+
+<p class="small muted" style="text-align:center;margin-top:18px" id="footnote"></p>
+
+<div class="scrim" id="scrim"></div>
+
+<!-- Feedback sheet -->
+<div class="sheet" id="fbSheet" role="dialog" aria-label="Feedback">
+  <div class="grab"></div>
+  <h3>What should you have worn?</h3>
+  <div class="small muted" id="fbSub"></div>
+  <div id="fbGroups"></div>
+  <button class="primary" id="fbSave">Save</button>
+  <button class="secondary" id="fbCancel">Cancel</button>
+</div>
+
+<!-- Settings sheet -->
+<div class="sheet" id="setSheet" role="dialog" aria-label="Settings">
+  <div class="grab"></div>
+  <h3>Your calibration</h3>
+  <div class="small muted">Learned from your feedback. Each line is the point where the app switches.</div>
+  <div class="group"><table class="tbl" id="thrTbl"></table></div>
+
+  <h2>Feedback history</h2>
+  <div class="group" id="histBox"></div>
+
+  <h2>Backup</h2>
+  <div class="group">
+    <div class="small muted">Your calibration lives on this phone only. Copy it somewhere safe, or paste a backup to restore.</div>
+    <textarea class="field" id="bkText" style="margin-top:8px" placeholder="Paste a backup here to restore"></textarea>
+    <div class="row spread">
+      <button class="linkbtn" id="bkCopy">Copy backup</button>
+      <button class="linkbtn" id="bkLoad">Restore from text</button>
+    </div>
+  </div>
+
+  <h2>Reset</h2>
+  <div class="group">
+    <button class="linkbtn danger" id="resetBtn">Forget all feedback</button>
+  </div>
+  <button class="secondary" id="setClose">Done</button>
+</div>
+
+<!-- Location sheet -->
+<div class="sheet" id="locSheet" role="dialog" aria-label="Location">
+  <div class="grab"></div>
+  <h3>Location</h3>
+  <button class="linkbtn" id="useGps">📍 Use my current location</button>
+  <input class="field" id="citySearch" type="search" placeholder="Search a city" autocomplete="off">
+  <div class="results" id="cityResults"></div>
+  <button class="secondary" id="locClose">Cancel</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+
+/* ------------------------------------------------------------------ icons */
+const S = (inner) => `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
+const ICON = {
+  tshirt: S(`<path d="M23 9 12 15 5 27l9 4 4-5v28h28V26l4 5 9-4-7-12-11-6c-2 5-6 7-9 7s-7-2-9-7z"/>`),
+  longsleeve: S(`<path d="M23 9 13 13 6 50l8 1 4-25v28h28V26l4 25 8-1-7-37-10-4c-2 5-6 7-9 7s-7-2-9-7z"/>`),
+  sweater: S(`<path d="M23 9 13 13 6 50l8 1 4-25v28h28V26l4 25 8-1-7-37-10-4c-2 4-6 6-9 6s-7-2-9-6z"/><path d="M18 47h28M7 45l8 1M57 45l-8 1M25 10c2 4 4 5 7 5s5-1 7-5"/><path d="M24 30h16M24 37h16" stroke-dasharray="2 4"/>`),
+  jacket: S(`<path d="M23 8 13 12 6 50l8 1 4-25v29h28V26l4 25 8-1-7-38-10-4"/><path d="M23 8l9 9 9-9M32 17v38M23 8l-3 9 7 4M41 8l3 9-7 4M22 36h6M36 36h6"/>`),
+  coat: S(`<path d="M22 8 12 12 5 52l8 1 5-26v32h28V27l5 26 8-1-7-40-10-4"/><path d="M22 8c0 6 4 10 10 10s10-4 10-10M32 18v41"/><circle cx="27" cy="28" r="1.6" fill="currentColor"/><circle cx="27" cy="38" r="1.6" fill="currentColor"/><circle cx="27" cy="48" r="1.6" fill="currentColor"/><path d="M36 40h7"/>`),
+  shorts: S(`<path d="M14 14h36l5 30-18 3-5-18-5 18-18-3z"/><path d="M14 20h36"/>`),
+  pants: S(`<path d="M18 6h28l5 52H38L32 24l-6 34H13z"/><path d="M18 12h28M32 12v12"/>`),
+  gloves: S(`<path d="M23 44V32c-4-1-8-4-9-8-1-3 2-5 5-4l4 3V17c0-6 4-9 9-9s9 3 9 9v27"/><path d="M21 44h22v12H21z"/><path d="M26 44v12M32 44v12M38 44v12" stroke-width="1.6"/>`),
+  beanie: S(`<path d="M12 44c0-17 9-28 20-28s20 11 20 28"/><path d="M9 43h46v10H9z"/><circle cx="32" cy="11" r="5"/><path d="M16 48h0M23 48h0M30 48h0M37 48h0M44 48h0M50 48h0" stroke-width="2.4"/>`),
+  scarf: S(`<path d="M14 12c6 6 12 9 18 9s12-3 18-9v10c-6 6-12 9-18 9s-12-3-18-9z"/><path d="M38 29l3 25h8l-3-27"/><path d="M41 54l-1 5M44 54v5M48 54l1 5" stroke-width="2"/>`),
+  umbrella: S(`<path d="M6 32C9 17 19 8 32 8s23 9 26 24c-4-3-9-3-13 0-4-3-9-3-13 0-4-3-9-3-13 0-4-3-9-3-13 0z"/><path d="M32 8V5M32 32v19c0 4-2 6-5 6s-5-2-5-5"/>`),
+  sunglasses: S(`<path d="M6 25h22v5c0 6-5 10-11 10S6 36 6 30z"/><path d="M36 25h22v5c0 6-5 10-11 10s-11-4-11-10z"/><path d="M28 28c3-3 5-3 8 0M6 25l-2-6M58 25l2-6"/>`),
+  none: S(`<circle cx="32" cy="32" r="18" stroke-dasharray="4 5"/>`),
+};
+
+/* --------------------------------------------------------- clothing model
+   Each group is a ladder of levels. Level 0 = the lightest choice.
+   Every step up has a threshold on one weather variable that the app learns.
+     var "feels": apparent temperature °C (colder => higher level)
+     var "rain" : max precipitation probability % in the window (wetter => higher)
+     var "uv"   : max UV index in the window (sunnier => higher)                 */
+const VARS = {
+  feels: { dir: "below", lo: -30, hi: 40, step: 0.25, margin: 0.5, lam: 0.02, fmt: v => `${round1(v)}°` },
+  rain:  { dir: "above", lo: 0,   hi: 100, step: 1,   margin: 4,   lam: 0.0008, fmt: v => `${Math.round(v)}%` },
+  uv:    { dir: "above", lo: 0,   hi: 12,  step: 0.25, margin: 0.4, lam: 0.08, fmt: v => `UV ${round1(v)}` },
+};
+const GROUPS = [
+  { id: "top",   name: "Top",       var: "feels", showBase: true,
+    levels: [{ label: "T-shirt", icon: "tshirt" }, { label: "Long sleeves", icon: "longsleeve", T0: 19 }, { label: "Sweater", icon: "sweater", T0: 12 }] },
+  { id: "outer", name: "Outerwear", var: "feels",
+    levels: [{ label: "None", icon: "none" }, { label: "Light jacket", icon: "jacket", T0: 15 }, { label: "Warm coat", icon: "coat", T0: 6 }] },
+  { id: "legs",  name: "Legs",      var: "feels", showBase: true,
+    levels: [{ label: "Shorts", icon: "shorts" }, { label: "Long pants", icon: "pants", T0: 18 }] },
+  { id: "hands", name: "Hands",     var: "feels",
+    levels: [{ label: "None", icon: "none" }, { label: "Gloves", icon: "gloves", T0: 4 }] },
+  { id: "head",  name: "Head",      var: "feels",
+    levels: [{ label: "None", icon: "none" }, { label: "Warm hat", icon: "beanie", T0: 2 }] },
+  { id: "neck",  name: "Neck",      var: "feels",
+    levels: [{ label: "None", icon: "none" }, { label: "Scarf", icon: "scarf", T0: 3 }] },
+  { id: "rain",  name: "Rain",      var: "rain",
+    levels: [{ label: "None", icon: "none" }, { label: "Umbrella", icon: "umbrella", T0: 45 }] },
+  { id: "sun",   name: "Sun",       var: "uv",
+    levels: [{ label: "None", icon: "none" }, { label: "Sunglasses", icon: "sunglasses", T0: 4 }] },
+];
+
+const HALF_LIFE_DAYS = 120; // older feedback counts less, so the model follows you through the seasons
+
+function round1(v) { return Math.round(v * 10) / 10; }
+
+/* Fit one threshold. points: [{x, need, w}]. Hinge loss with a margin,
+   plus a weak pull towards the default so a few ratings don't send it wild. */
+function fitThreshold(points, T0, spec) {
+  let best = T0, bestCost = Infinity;
+  for (let T = spec.lo; T <= spec.hi + 1e-9; T += spec.step) {
+    let c = spec.lam * (T - T0) ** 2;
+    for (const p of points) {
+      if (spec.dir === "below") {
+        // needed  -> want x <= T - margin ; not needed -> want x >= T + margin
+        c += p.w * (p.need ? Math.max(0, p.x - (T - spec.margin)) : Math.max(0, (T + spec.margin) - p.x));
+      } else {
+        c += p.w * (p.need ? Math.max(0, (T + spec.margin) - p.x) : Math.max(0, p.x - (T - spec.margin)));
+      }
+    }
+    if (c < bestCost - 1e-9) { bestCost = c; best = T; }
+  }
+  return best;
+}
+
+function computeThresholds(records, now = Date.now()) {
+  const out = {};
+  for (const g of GROUPS) {
+    const spec = VARS[g.var];
+    const ts = [], ns = [];
+    for (let k = 1; k < g.levels.length; k++) {
+      const pts = [];
+      for (const r of records) {
+        if (r.choices[g.id] == null || r.vars[g.var] == null) continue;
+        const age = (now - r.ts) / 864e5;
+        pts.push({ x: r.vars[g.var], need: r.choices[g.id] >= k, w: Math.pow(0.5, age / HALF_LIFE_DAYS) });
+      }
+      ts.push(fitThreshold(pts, g.levels[k].T0, spec));
+      ns.push(pts.length);
+    }
+    // keep the ladder ordered (a coat must switch on at a colder point than a jacket)
+    for (let i = 1; i < ts.length; i++) {
+      if (spec.dir === "below") ts[i] = Math.min(ts[i], ts[i - 1] - 1);
+      else ts[i] = Math.max(ts[i], ts[i - 1] + spec.step);
+    }
+    out[g.id] = { T: ts, n: ns };
+  }
+  return out;
+}
+
+function suggest(vars, thr) {
+  const levels = {};
+  for (const g of GROUPS) {
+    const x = vars[g.var], spec = VARS[g.var];
+    let lvl = 0;
+    if (x != null) thr[g.id].T.forEach((T, i) => {
+      if (spec.dir === "below" ? x < T : x >= T) lvl = i + 1;
+    });
+    levels[g.id] = lvl;
+  }
+  return levels;
+}
+
+/* --------------------------------------------------------------- storage */
+const KEY = "layers.v1";
+let state = { records: [], pending: null, loc: null, win: "now", cache: null };
+try { Object.assign(state, JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) {}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+
+/* --------------------------------------------------------------- weather */
+const WMO = {
+  0: ["Clear", "☀️"], 1: ["Mostly clear", "🌤️"], 2: ["Partly cloudy", "⛅"], 3: ["Overcast", "☁️"],
+  45: ["Fog", "🌫️"], 48: ["Freezing fog", "🌫️"], 51: ["Light drizzle", "🌦️"], 53: ["Drizzle", "🌦️"], 55: ["Heavy drizzle", "🌧️"],
+  56: ["Freezing drizzle", "🌧️"], 57: ["Freezing drizzle", "🌧️"], 61: ["Light rain", "🌦️"], 63: ["Rain", "🌧️"], 65: ["Heavy rain", "🌧️"],
+  66: ["Freezing rain", "🌧️"], 67: ["Freezing rain", "🌧️"], 71: ["Light snow", "🌨️"], 73: ["Snow", "🌨️"], 75: ["Heavy snow", "❄️"],
+  77: ["Snow grains", "🌨️"], 80: ["Showers", "🌦️"], 81: ["Showers", "🌧️"], 82: ["Heavy showers", "⛈️"], 85: ["Snow showers", "🌨️"],
+  86: ["Snow showers", "🌨️"], 95: ["Thunderstorm", "⛈️"], 96: ["Thunderstorm, hail", "⛈️"], 99: ["Thunderstorm, hail", "⛈️"],
+};
+let wx = null;      // parsed forecast
+let manual = null;  // manual feels-like when weather can't load
+
+async function getJSON(url) {
+  const r = await fetch(url);
+  if (!r.ok) throw new Error("HTTP " + r.status);
+  return r.json();
+}
+
+function locate() {
+  return new Promise((res, rej) => {
+    if (!navigator.geolocation) return rej(new Error("no geolocation"));
+    navigator.geolocation.getCurrentPosition(
+      p => res({ lat: p.coords.latitude, lon: p.coords.longitude }),
+      e => rej(e), { enableHighAccuracy: false, timeout: 12000, maximumAge: 10 * 60e3 });
+  });
+}
+
+async function reverseName(lat, lon) {
+  try {
+    const j = await getJSON(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
+    return j.locality || j.city || j.principalSubdivision || "Current location";
+  } catch (e) { return "Current location"; }
+}
+
+async function loadWeather() {
+  $("#errBox").innerHTML = "";
+  let loc = state.loc;
+  try {
+    if (!loc || loc.mode === "gps") {
+      $("#locName").textContent = "Locating…";
+      try {
+        const p = await locate();
+        loc = { mode: "gps", lat: p.lat, lon: p.lon, name: (loc && loc.mode === "gps" && Math.abs(loc.lat - p.lat) < .05 && Math.abs(loc.lon - p.lon) < .05 && loc.name) || await reverseName(p.lat, p.lon) };
+        state.loc = loc; save();
+      } catch (e) {
+        if (!loc) { // first run and no permission: fall back to Amsterdam, user can change it
+          loc = { mode: "fixed", lat: 52.37, lon: 4.89, name: "Amsterdam" };
+          state.loc = loc; save();
+          toast("Location unavailable — showing Amsterdam. Tap the name to change.");
+        }
+      }
+    }
+    $("#locName").textContent = loc.name;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}` +
+      `&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,precipitation` +
+      `&hourly=temperature_2m,apparent_temperature,precipitation_probability,uv_index,weather_code,wind_speed_10m` +
+      `&timezone=auto&forecast_days=2`;
+    const j = await getJSON(url);
+    wx = parseWx(j);
+    state.cache = { at: Date.now(), raw: j }; save();
+    manual = null;
+  } catch (e) {
+    if (state.cache && Date.now() - state.cache.at < 6 * 3600e3) {
+      wx = parseWx(state.cache.raw);
+      showErr(`Offline — using the forecast from ${fmtTime(state.cache.at)}.`, false);
+    } else {
+      wx = null;
+      showErr("Couldn't load the weather. Set the feels-like temperature yourself:", true);
+    }
+  }
+  render();
+}
+
+function parseWx(j) {
+  const off = (j.utc_offset_seconds || 0) * 1000;
+  const toMs = s => Date.parse(s + "Z") - off;
+  const h = j.hourly;
+  const hours = h.time.map((t, i) => ({
+    t: toMs(t), temp: h.temperature_2m[i], feels: h.apparent_temperature[i], rain: h.precipitation_probability[i],
+    uv: h.uv_index[i], code: h.weather_code[i], wind: h.wind_speed_10m[i],
+  }));
+  const c = j.current;
+  return { cur: { temp: c.temperature_2m, feels: c.apparent_temperature, code: c.weather_code, wind: c.wind_speed_10m }, hours };
+}
+
+const WINS = { now: 1, "3h": 3, "8h": 8 };
+function windowVars() {
+  if (!wx) return manual ? { feels: manual, rain: 0, uv: 0, temp: manual, code: null, wind: null, fMin: manual, fMax: manual } : null;
+  const now = Date.now(), span = WINS[state.win] * 3600e3;
+  const hs = wx.hours.filter(h => h.t + 3600e3 > now && h.t < now + span);
+  const pick = (k, f) => hs.length ? f(...hs.map(h => h[k]).filter(v => v != null)) : null;
+  const fMin = Math.min(wx.cur.feels, pick("feels", Math.min) ?? wx.cur.feels);
+  const fMax = Math.max(wx.cur.feels, pick("feels", Math.max) ?? wx.cur.feels);
+  return {
+    feels: state.win === "now" ? wx.cur.feels : fMin,   // dress for the coldest part of the window
+    fMin, fMax,
+    rain: pick("rain", Math.max) ?? 0,
+    uv: pick("uv", Math.max) ?? 0,
+    temp: wx.cur.temp, code: wx.cur.code, wind: wx.cur.wind,
+  };
+}
+
+/* ---------------------------------------------------------------- render */
+const $ = s => document.querySelector(s);
+function fmtTime(ms) { return new Date(ms).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }); }
+function fmtDay(ms) {
+  const d = new Date(ms), t = new Date();
+  const same = d.toDateString() === t.toDateString();
+  const y = new Date(t - 864e5).toDateString() === d.toDateString();
+  return (same ? "Today" : y ? "Yesterday" : d.toLocaleDateString([], { weekday: "short", day: "numeric", month: "short" })) + " " + fmtTime(ms);
+}
+function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("show"), 2600); }
+function showErr(msg, withSlider) {
+  $("#errBox").innerHTML = `<div class="err"><div class="small">${msg}</div>` +
+    (withSlider ? `<input type="range" min="-20" max="35" step="1" value="${manual ?? 8}" id="manualR"><div class="small muted" id="manualV"></div>` : "") + `</div>`;
+  if (withSlider) {
+    const r = $("#manualR");
+    const upd = () => { manual = +r.value; $("#manualV").textContent = `Feels like ${manual}°`; render(); };
+    r.oninput = upd; upd();
+  }
+}
+
+let current = null; // {vars, levels}
+function render() {
+  document.querySelectorAll("#seg button").forEach(b => b.classList.toggle("on", b.dataset.w === state.win));
+  const v = windowVars();
+  const thr = computeThresholds(state.records);
+  if (!v) { $("#outfit").innerHTML = ""; current = null; return; }
+  const levels = suggest(v, thr);
+  current = { vars: { feels: round1(v.feels), rain: Math.round(v.rain), uv: round1(v.uv) }, levels };
+
+  $("#feels").innerHTML = `${Math.round(v.feels)}°<small>feels like</small>`;
+  const [desc, emo] = WMO[v.code] || ["", ""];
+  $("#cond").textContent = wx ? `${emo} ${desc} · ${Math.round(v.temp)}° actual` : "Manual temperature";
+  const chips = [];
+  if (wx && state.win !== "now") chips.push(`Feels ${Math.round(v.fMin)}° to ${Math.round(v.fMax)}°`);
+  if (wx) chips.push(`💧 ${Math.round(v.rain)}% rain`, `💨 ${Math.round(v.wind)} km/h`, `UV ${round1(v.uv)}`);
+  $("#chips").innerHTML = chips.map(c => `<span class="chip">${c}</span>`).join("");
+
+  const items = [];
+  for (const g of GROUPS) {
+    const l = levels[g.id];
+    if (l > 0 || g.showBase) items.push(g.levels[l]);
+  }
+  const html = items.map((it, i) => `<div class="item" style="animation-delay:${i * 35}ms">${ICON[it.icon]}<div class="lbl">${it.label}</div></div>`).join("");
+  if ($("#outfit").dataset.sig !== html) { $("#outfit").innerHTML = html; $("#outfit").dataset.sig = html; }
+
+  const n = state.records.length;
+  $("#footnote").textContent = n ? `Calibrated on ${n} rating${n > 1 ? "s" : ""}. Weather: Open-Meteo.` : "Using default settings — rate your outfits to make it yours. Weather: Open-Meteo.";
+  renderPending();
+}
+
+function renderPending() {
+  const p = state.pending, box = $("#pendingBox");
+  if (!p) { box.innerHTML = ""; $("#goBtn").textContent = "I'm heading out"; return; }
+  $("#goBtn").textContent = "Heading out again";
+  const mins = (Date.now() - p.ts) / 60e3;
+  const when = fmtDay(p.ts);
+  box.innerHTML = `<div class="banner"><div><b>How was your outfit?</b></div>
+    <div class="small muted">You went out ${when} · feels like ${Math.round(p.vars.feels)}°${mins < 20 ? " · rate it once you're back" : ""}</div>
+    <div class="acts"><button id="pRate">Rate it</button><button class="ghost" id="pSkip">Skip</button></div></div>`;
+  $("#pRate").onclick = () => openFeedback(p, true);
+  $("#pSkip").onclick = () => { state.pending = null; save(); renderPending(); };
+}
+
+/* --------------------------------------------------------------- sheets */
+function openSheet(id) { $("#scrim").classList.add("open"); $(id).classList.add("open"); }
+function closeSheets() { $("#scrim").classList.remove("open"); document.querySelectorAll(".sheet").forEach(s => s.classList.remove("open")); }
+$("#scrim").onclick = closeSheets;
+
+let fbCtx = null;
+function openFeedback(snap, fromPending) {
+  fbCtx = { snap, fromPending, choice: { ...snap.levels } };
+  $("#fbSub").textContent = `${fmtDay(snap.ts)} · feels like ${round1(snap.vars.feels)}° · ${snap.vars.rain}% rain · UV ${snap.vars.uv}. Tap what would have been right.`;
+  drawFeedback();
+  openSheet("#fbSheet");
+}
+function drawFeedback() {
+  const { snap, choice } = fbCtx;
+  $("#fbGroups").innerHTML = GROUPS.map(g => `
+    <div class="group"><div class="gname"><span>${g.name}</span>${choice[g.id] !== snap.levels[g.id] ? '<span style="color:var(--accent)">changed</span>' : ""}</div>
+      <div class="opts">${g.levels.map((l, i) => `
+        <button class="opt ${choice[g.id] === i ? "sel" : ""}" data-g="${g.id}" data-l="${i}">
+          ${ICON[l.icon]}<div class="t">${l.label}</div><div class="was">${snap.levels[g.id] === i ? "suggested" : ""}</div>
+        </button>`).join("")}</div></div>`).join("");
+  $("#fbGroups").querySelectorAll(".opt").forEach(b => b.onclick = () => { choice[b.dataset.g] = +b.dataset.l; drawFeedback(); });
+  const changed = GROUPS.some(g => choice[g.id] !== snap.levels[g.id]);
+  $("#fbSave").textContent = changed ? "Save correction" : "It was spot on ✓";
+}
+$("#fbCancel").onclick = closeSheets;
+$("#fbSave").onclick = () => {
+  const { snap, choice, fromPending } = fbCtx;
+  const before = computeThresholds(state.records);
+  state.records.push({ ts: snap.ts, vars: snap.vars, suggested: snap.levels, choices: { ...choice } });
+  if (fromPending) state.pending = null;
+  save();
+  const after = computeThresholds(state.records);
+  const moved = [];
+  for (const g of GROUPS) after[g.id].T.forEach((T, i) => {
+    const d = T - before[g.id].T[i];
+    if (Math.abs(d) >= 4 * VARS[g.var].step) moved.push(`${g.levels[i + 1].label} ${VARS[g.var].fmt(T)}`);
+  });
+  closeSheets(); render();
+  toast(moved.length ? "Adjusted: " + moved.slice(0, 3).join(", ") : "Thanks — noted.");
+};
+
+function openSettings() {
+  const thr = computeThresholds(state.records);
+  let rows = "";
+  for (const g of GROUPS) {
+    const spec = VARS[g.var];
+    thr[g.id].T.forEach((T, i) => {
+      const cond = g.var === "feels" ? `feels below ${spec.fmt(T)}` : g.var === "rain" ? `rain chance ≥ ${spec.fmt(T)}` : `≥ ${spec.fmt(T)}`;
+      const changed = Math.abs(T - g.levels[i + 1].T0) >= spec.step;
+      rows += `<tr><td>${g.levels[i + 1].label}</td><td>${cond}${changed ? ` <span class="small">(was ${spec.fmt(g.levels[i + 1].T0)})</span>` : ""}</td></tr>`;
+    });
+  }
+  $("#thrTbl").innerHTML = rows;
+  const recs = state.records.map((r, i) => ({ r, i })).reverse();
+  $("#histBox").innerHTML = recs.length ? recs.map(({ r, i }) => {
+    const diffs = GROUPS.filter(g => r.choices[g.id] !== r.suggested[g.id])
+      .map(g => `${g.levels[r.choices[g.id]].label === "None" ? "no " + g.levels[r.suggested[g.id]].label.toLowerCase() : g.levels[r.choices[g.id]].label.toLowerCase()}`);
+    return `<div class="hist"><div><div>${fmtDay(r.ts)} · ${round1(r.vars.feels)}°</div><div class="muted">${diffs.length ? "Should have been: " + diffs.join(", ") : "Spot on"}</div></div><button data-i="${i}" aria-label="Delete">✕</button></div>`;
+  }).join("") : `<div class="small muted">No feedback yet.</div>`;
+  $("#histBox").querySelectorAll("button").forEach(b => b.onclick = () => { state.records.splice(+b.dataset.i, 1); save(); render(); openSettings(); });
+  $("#bkText").value = "";
+  openSheet("#setSheet");
+}
+$("#settingsBtn").onclick = openSettings;
+$("#setClose").onclick = closeSheets;
+$("#bkCopy").onclick = async () => {
+  const txt = JSON.stringify({ app: "layers", v: 1, records: state.records });
+  $("#bkText").value = txt;
+  try { await navigator.clipboard.writeText(txt); toast("Backup copied"); } catch (e) { $("#bkText").select(); toast("Select the text and copy it"); }
+};
+$("#bkLoad").onclick = () => {
+  try {
+    const j = JSON.parse($("#bkText").value);
+    if (!Array.isArray(j.records)) throw 0;
+    state.records = j.records; save(); render(); openSettings(); toast(`Restored ${j.records.length} ratings`);
+  } catch (e) { toast("That doesn't look like a backup"); }
+};
+let resetArm = 0;
+$("#resetBtn").onclick = () => {
+  if (Date.now() - resetArm > 3000) { resetArm = Date.now(); $("#resetBtn").textContent = "Tap again to confirm"; return; }
+  state.records = []; state.pending = null; save(); $("#resetBtn").textContent = "Forget all feedback"; render(); openSettings(); toast("Back to defaults");
+};
+
+/* location sheet */
+$("#locBtn").onclick = () => { $("#citySearch").value = ""; $("#cityResults").innerHTML = ""; openSheet("#locSheet"); };
+$("#locClose").onclick = closeSheets;
+$("#useGps").onclick = () => { state.loc = { mode: "gps" }; save(); closeSheets(); loadWeather(); };
+let searchT;
+$("#citySearch").oninput = e => {
+  clearTimeout(searchT);
+  const q = e.target.value.trim();
+  if (q.length < 2) { $("#cityResults").innerHTML = ""; return; }
+  searchT = setTimeout(async () => {
+    try {
+      const j = await getJSON(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=6&language=en`);
+      const rs = j.results || [];
+      $("#cityResults").innerHTML = rs.map((r, i) => `<button data-i="${i}">${r.name}<span class="muted small"> · ${[r.admin1, r.country].filter(Boolean).join(", ")}</span></button>`).join("") || `<div class="small muted" style="padding:10px 4px">No matches</div>`;
+      $("#cityResults").querySelectorAll("button").forEach(b => b.onclick = () => {
+        const r = rs[+b.dataset.i];
+        state.loc = { mode: "fixed", lat: r.latitude, lon: r.longitude, name: r.name }; save(); closeSheets(); loadWeather();
+      });
+    } catch (err) { $("#cityResults").innerHTML = `<div class="small muted" style="padding:10px 4px">Search failed</div>`; }
+  }, 300);
+};
+
+/* main actions */
+document.querySelectorAll("#seg button").forEach(b => b.onclick = () => { state.win = b.dataset.w; save(); render(); });
+$("#refreshBtn").onclick = loadWeather;
+$("#goBtn").onclick = () => {
+  if (!current) return;
+  state.pending = { ts: Date.now(), vars: current.vars, levels: current.levels }; save(); renderPending();
+  toast("Have a good one — rate the outfit when you're back.");
+};
+$("#rateNowBtn").onclick = () => { if (current) openFeedback({ ts: Date.now(), vars: current.vars, levels: current.levels }, false); };
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible" && (!state.cache || Date.now() - state.cache.at > 15 * 60e3)) loadWeather();
+});
+
+// expose for testing
+window.__layers = { fitThreshold, computeThresholds, suggest, GROUPS, VARS };
+
+if (state.cache) { try { wx = parseWx(state.cache.raw); if (state.loc) $("#locName").textContent = state.loc.name; render(); } catch (e) {} }
+loadWeather();
+</script>
+</body>
+</html>
